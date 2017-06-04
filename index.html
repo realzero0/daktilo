@@ -15,5 +15,6 @@ sitemap:
                 <span class="post-teaser__date">{{ site.posts[i].date | date: "%d %B %Y" }}</span>
             </a>
         </li>
+        {%i -= 1%}
     {% endfor %}
 </ul>
