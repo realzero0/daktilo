@@ -1,12 +1,12 @@
 /* =Base */
 body {
-    font-family: 'Inconsolata', ;
+    font-family: 'NanumBarunGothic', '나눔바른고딕', sans-serif;
     color: $iron;
 }
 
 a {
     color: $cloudy;
-    font-weight: bold;
+    font-size: 22px;
     text-decoration: none;
 
     &:hover {
@@ -15,7 +15,7 @@ a {
 }
 
 p {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 32px;
 }
 
@@ -161,12 +161,12 @@ strong {
 }
 
 .post-teaser__title {
-    font-size: 22px;
+    font-size: 24px;
     color: $iron;
 }
 
 .post-teaser__date {
-    font-size: 16px;
+    font-size: 22px;
     float: right;
     vertical-align: middle;
     color: $cloudy;
@@ -186,12 +186,12 @@ strong {
 }
 
 .explore__devider {
-    font-size: 18px;
+    font-size: 22px;
     letter-spacing: 8.18px;
 }
 
 .explore__label {
-    font-size: 18px;
+    font-size: 22px;
     margin-top: 15px;
 }
 
@@ -204,7 +204,7 @@ strong {
 
 .categories__item {
     display: inline-block;
-    font-size: 18px;
+    font-size: 22px;
 }
 
 .categories__item a {
