@@ -1,12 +1,12 @@
 ---
 layout: page
 title: About
-subtitle: Just who the hell you think I am?
+subtitle: Zero의 삶
 permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+<br>
+안녕하세요 Zero입니다.
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+- [뉴스브리핑 페이지 제작(2016.12)](http://www.menipeople.com/newsbriefing.php)
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)

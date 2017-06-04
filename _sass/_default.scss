@@ -2,7 +2,6 @@
 body {
     font-family: 'Inconsolata', ;
     color: $iron;
-    background-color: $dorian;
 }
 
 a {
@@ -119,8 +118,8 @@ strong {
 
 /* =Titles */
 .page-title {
-    margin-top:100px;
-    margin-bottom:125px;
+    margin-top:55px;
+    margin-bottom:65px;
     text-align: center;
 }
 
@@ -152,6 +151,7 @@ strong {
 .list-posts {
     list-style-type: none;
     padding: 0px;
+    margin-top: 60px;
 }
 
 .post-teaser {
@@ -182,7 +182,6 @@ strong {
 .explore {
     text-align: center;
     color: $cloudy;
-    margin-top: 140px;
 }
 
 .explore__devider {
@@ -191,24 +190,24 @@ strong {
 }
 
 .explore__label {
-    font-size: 14px;
+    font-size: 18px;
     margin-top: 15px;
 }
 
 .categories {
     list-style-type: none;
-    margin-top: 15px;
+    margin-top: 3px;
+    margin-bottom: 20px;
     padding: 0px;
 }
 
 .categories__item {
     display: inline-block;
-    font-weight: 700;
     font-size: 18px;
 }
 
 .categories__item a {
-    color: $iron;
+    color: #5a5a5a;
 }
 
 .categories__item:after {
@@ -267,8 +266,8 @@ strong {
     }
 
     .page-title {
-        margin-top: 80px;
-        margin-bottom: 60px;
+        margin-top: 10px;
+        margin-bottom: 30px;
     }
 
     .page-title__text {
@@ -292,7 +291,7 @@ strong {
     }
 
     .explore {
-        margin-top: 80px;
+        margin-top: 60px;
     }
 
     .post-title__text {

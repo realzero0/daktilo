@@ -1,19 +1,17 @@
 # Site settings
-title: Daktilo
+title: Blog Zero
 description: >
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+  안녕하세요~ Zero의 블로그입니다.
 
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://realzero0.github.io" # the base hostname & protocol for your site
+url: "https://realzero0.github.io" # the base hostname & protocol for your site
 
 author:
-  fullname: Motaquillah Maddane
-  googleplus: https://www.google.com/+MotaquillahMaddane
-  github: kronik3r
-  twitter: electrik_frog
-  # disqus: your_disqus_forum_shortname
+  fullname: Zero
+  #googleplus: https://www.google.com/+MotaquillahMaddane
+  github: realzero0
+  #twitter: electrik_frog
+  # disqus: Zero
 
 # google_analytics: 'UA-XXXXXXXX-X'
 

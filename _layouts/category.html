@@ -2,7 +2,7 @@
 layout: default
 ---
 {% include category/title.html %}
-
+{% include page/explore.html %}
 <ul class="list-posts">
     {% assign empty_category = true %}
     {% for post in site.posts %}
@@ -25,4 +25,3 @@ layout: default
     {% endif %}
 </ul>
 
-{% include page/explore.html %}
