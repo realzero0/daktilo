@@ -7,11 +7,12 @@ sitemap:
 ---
 
 <ul class="list-posts">
-    {% for -post in site.posts %}
+    {% i = site.posts.length-1 %}
+    {% while i >= 0    %}
         <li class="post-teaser">
             <a href="{{ post.url | prepend: site.baseurl }}">
-                <span class="post-teaser__title">{{ post.title }}</span>
-                <span class="post-teaser__date">{{ post.date | date: "%d %B %Y" }}</span>
+                <span class="post-teaser__title">{{ site.posts[i].title }}</span>
+                <span class="post-teaser__date">{{ site.posts[i].date | date: "%d %B %Y" }}</span>
             </a>
         </li>
     {% endfor %}
