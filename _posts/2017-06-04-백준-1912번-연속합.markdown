@@ -8,6 +8,7 @@ categories: [algorithms]
 
 연속합 문제는 Dynamic Programming으로 해결했습니다.
 
+```java
 import java.io.*;
 import java.util.*;
 
@@ -28,5 +29,5 @@ public class Main {
         System.out.println(dt[n]);
     }
 }
-
+```
 
