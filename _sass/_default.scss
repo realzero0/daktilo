@@ -248,7 +248,7 @@ strong {
 @media (max-width: 800px) {
     /* =Base */
     p {
-        font-size: 16px;
+        font-size: 22px;
         line-height: 1.6;
     }
 
@@ -280,7 +280,7 @@ strong {
     }
 
     .post-teaser__title {
-        font-size: 18px;
+        font-size: 22px;
         @include centered-block();
     }
 
