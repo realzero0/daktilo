@@ -1,0 +1,52 @@
+---
+layout: post
+title:  "[소프트웨어 공학] 상세설계 정리"
+subtitle:
+date:   2017-06-12 18:40:00
+categories: [study]
+---
+
+* * *
+
+7장 상세설계
+
+- 모듈 내부설계
+	- 알고리즘의 선택: 정확성, 효율성(시간복잡도 낮춤 예. O(n^2)<O(nlogn)<O(n), Big-O notation) 추구
+	- 자료구조의 선택: 시간/공간 복잡도 동시고려 (예. 희소행렬 -> 2차원 배열 채택X 1차원 linked list 채택 O, 1억x1억이라면 좌표값만 가진 linked list를 높임, 공간복잡도를 낮추면 시간복잡도가 높아지게 됨, 최적점을 찾는게 중요함)
+	<br>: Pareto 법칙 고려: 특정 기능의 수행시간의 80%는 20%코드에서 소비됨<br><br>
+- class 설계 : class 내부 method의 로직(flow) 설계
+	- 개발차원에서 재사용 -> 개발속도를 빠르게 하기 위해서, 표준으로 배포한 것들을 이용함
+		- 응용객체: 도메인의 개념을 타나내는 도메인 객체(학사응용(학사관리시스템) 등)
+		- 솔루션객체: 컴포넌트, 저장소, UI 등을 지원하는 객체(응용과 상관없이 일반성을 가지는 컴포넌트(graph만드는 것) 등)
+	- class 재사용을 위해 준비된 class의 집합체 => framework(일반성을 가져야함)
+		- 인프라 구조 framework: SW개발 프로세스의 간소화를 목적(예. OS, UI설계, 통신테스팅 등) - 인프라를 만들기 위한 것
+		- 미들웨어 framework: 분산응용시스템의 응용 컴포넌트와의 연동 - 미들웨어를 사서 이용
+		- 엔터프라이즈 응용 framework: 특수 도메인용 맞춤 class 집합체(예. 통신, 항공 금융 등) - 기업용
+		<br> cf. Platform - 특정 소프트웨어 시장이 형성되기 위한 기본 바탕이 되는 것
+	- class 설계 최적화
+		- 불필요한 다 대 다 관계 제거
+		- 오직 하나의 연관관계를 가지는 클래스를 속성으로 전환
+		- 중복제거(데이터)
+	- 재사용 방법
+		- 상속 이용(위임방식도 있음)
+		- hook 메소드의 구현(깡통 메소드를 정해줌, framework을 상속받아서 이용하는 사람이 알아서 정의해서 사용(overriding))<br><br>
+- UI설계
+	- GUI, Text(Natural language), 음성 등
+	- 목표: 일관성, 간결성(복잡하지 않게), 기능성, 개인맞춤형
+	- 화면설계: 교재 참조<br><br>
+- DB설계
+	- file system
+		- 공유 어려움
+		- 물리적 file 수준에서 작업
+	- DBMS(mysql, Oracle 등) - DB는 데이터의 체계적 모임(표준화된 데이터 모델, 관계형 모델(Relational Model))
+		- 공유가 용이(어떤 시스템, C++, C#, java라도 접근가능함)
+		- 논리적 수준(table 수준에서 질의(SQL, Structured Query Language) 수행)에서 작업(하나의 파일 내에 여러개의 테이블이 있음, 이걸 설계하는 게 DB설계) - 하나 내지 두개의 DB를 가짐 - DB를 설계해야함
+	- 절차
+	<br>ERD 작성(Entity클래스를 이용해서 만듬, Entity-Relationship Diagram) -> 관계형 스키마 작성(테이블의 컬럼을 만듦) -> 정규화(데이터의 중복을 제거하기 위해서 테이블을 분할하는 것) -> 관계형 테이블 구축
+	- 정규화(Nomaligation): 테이블 분할 원칙
+	- 객체(object)와 테이블(table)
+		- entity class -> table로 전환(엔티티클래스를 그대로 하나의 table로 만들어냄, 객체의 데이터 하나를 하나의 컬럼으로 만들면 됨, 하나의 객체는 하나의 record라고 볼 수 있음)
+		- class의 attribute -> table의 column
+		- 각 object는 id가 없지만 table의 각 record는 id수준의 primary key 컬럼이 필요
+		table의 primary key와 foreign key(다른 테이블의 p.k를 가리킴)가 중요
+		- 집합관계: 별도의 table로 생성

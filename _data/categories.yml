@@ -1,11 +1,11 @@
-- slug: design
-  name: Design
+- slug: study
+  name: Study
 
 - slug: tools
   name: Tools
 
-- slug: productivity
-  name: Productivity
+- slug: news
+  name: 뉴스&칼럼
 
 - slug: algorithms
   name: 알고리즘

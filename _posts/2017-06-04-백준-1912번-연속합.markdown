@@ -8,8 +8,7 @@ categories: [algorithms]
 
 연속합 문제는 Dynamic Programming으로 해결했습니다.
 
-```java
-import java.io.*;
+<pre><code>import java.io.*;
 import java.util.*;
 
 public class Main {
@@ -21,13 +20,12 @@ public class Main {
         int[] array = new int[n+1];
         int[] dt = new int[n + 1];
         Arrays.fill(dt, -1001);
-        for (int i = 1; i <= n; i++) {
+        for (int i = 1; i &lt;= n; i++) {
             array[i] = Integer.parseInt(st.nextToken());
             dt[i] = Math.max(dt[i-1] + array[i], array[i]);
         }
         Arrays.sort(dt);
         System.out.println(dt[n]);
     }
-}
-```
+}</code></pre>
 

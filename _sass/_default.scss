@@ -15,7 +15,7 @@ a {
 }
 
 p {
-    font-size: 22px;
+    font-size: 1.3em;
     line-height: 32px;
 }
 
@@ -49,7 +49,7 @@ blockquote {
 
     p {
         display: inline;
-        font-size: 20px;
+        font-size: 1.3em;
         color: $cloudy;
         font-weight: 400;
         &:before { content: "“ "; }
@@ -63,7 +63,7 @@ strong {
 
 /* =Header */
 .wrapper {
-    max-width: 800px;
+    max-width: 1020px;
     margin: 100px auto;
     margin-top: 20px;
 }
@@ -248,12 +248,14 @@ strong {
 @media (max-width: 800px) {
     /* =Base */
     p {
-        font-size: 22px;
+        font-size: 1em;
         line-height: 1.6;
     }
-
+    blockquote p {
+      font-size: 1em;
+    }
     .wrapper {
-        width: 80%;
+        width: 85%;
     }
 
     .navigation,
@@ -315,7 +317,7 @@ td.hljs-ln-numbers {
 
     text-align: center;
     color: #ccc;
-    border-right: 1px solid #CCC;
+    border-right: 2px solid #CCC;
     vertical-align: top;
     padding-right: 5px;
 
