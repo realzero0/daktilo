@@ -3,7 +3,7 @@ layout: post
 title:  "안녕하세요~ Zero입니다!"
 subtitle: ""
 date:   2017-06-04 21:17:00
-categories: [algorithms]
+categories: []
 ---
 
 안녕하세요~ Zero의 기술 블로그입니다!
