@@ -2,7 +2,7 @@
 layout: post
 title:  "[Boost_Camp] Spring MVC2"
 subtitle: "시작 전 준비단계"
-date:   2017-07-06 09:40:00
+date:   2017-07-06 12:40:00
 categories: [study]
 ---
 
@@ -212,7 +212,7 @@ public class MemberController {
                 memberFormParam.getEmail() == null || memberFormParam.getEmail().length() == 0 ||
                 memberFormParam.getPasswd1() == null || memberFormParam.getPasswd1().length() == 0 ||
                 memberFormParam.getPasswd2() == null || memberFormParam.getPasswd2().length() == 0) {
-            return "redirect:/"; // 이름, email, passwd1, passwd2 중에서 하나라도 입력하지 않은 것이 있을 경우 이동
+            return "redirect:/"; // 이름, email, passwd1, passwd2 중에서 하나라도 입력하지 않은 것이 있을 경우 이동, 새로운 요청이 생긴다
         }else {
             if (memberFormParam.getPasswd1().equals(memberFormParam.getPasswd2())) { //사용자가 입력한 암호가 같을 경우
                 Member member = new Member();

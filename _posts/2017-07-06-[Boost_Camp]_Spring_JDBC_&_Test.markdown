@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[Boost_Camp] Spring Dispatcher 정리2"
+title:  "[Boost_Camp] Spring JDBC & Test"
 subtitle: "시작 전 준비단계"
 date:   2017-07-06 09:40:00
 categories: [study]
