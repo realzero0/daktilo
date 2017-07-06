@@ -336,8 +336,77 @@ public class MemberSqls {
 
 ```
 2-3. Member 클래스를 작성한다.
-```
 
+```
+public class Member {
+    private long id;
+    private String name;
+    private String email;
+    private String passwd;
+
+    public Member() {
+    }
+
+    public Member(String name, String email) {
+        this.name = name;
+        this.email = email;
+    }
+
+    public Member(String name, String email, String passwd) {
+        this.name = name;
+        this.email = email;
+        this.passwd = passwd;
+    }
+
+    public Member(long id, String name, String email, String passwd) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.passwd = passwd;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(String passwd) {
+        this.passwd = passwd;
+    }
+
+    @Override
+    public String toString() {
+        return "Member{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", passwd='" + passwd + '\'' +
+                '}';
+    }
+}
 ```
 
 2-4. Dao 클래스를 작성한다.
@@ -360,7 +429,7 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
-@Repository
+@Repository //Bean 등록하는 작업이 없어도 자동으로 등록해줌
 public class MemberDao {
     private NamedParameterJdbcTemplate jdbc; // sql 을 실행하기 위해 사용되는 객체
     private SimpleJdbcInsert insertAction; // insert 를 편리하게 하기 위한 객체
