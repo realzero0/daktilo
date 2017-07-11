@@ -32,7 +32,7 @@ function deleteList(categoryId){
 bind, apply, call, this를 배운다.
 
 
-###this는 호출할 때 결정된다.
+##this는 호출할 때 결정된다.
 한번 호출 되면 함수가 끝날때까지 변경할 수 없음
 setTimeout, setInterval는 window가 기본 this임
 element event등은 모두 element가 기본 this임
@@ -58,7 +58,7 @@ Test.init();
 ```
 
 
-###->해결 바인드(바인드의 반환값은 함수임)
+##->해결 바인드(바인드의 반환값은 함수임)
 
 
 
@@ -161,7 +161,7 @@ Test.init(Test.some);
 ```
 
 
-###어플라이는 인자로 전달하는 데, this를 특정값으로 고정시킴
+##어플라이는 인자로 전달하는 데, this를 특정값으로 고정시킴
 
 ```
 var a = 10;
