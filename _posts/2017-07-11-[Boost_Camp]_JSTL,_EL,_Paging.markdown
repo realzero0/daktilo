@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[Boost_Camp] Front End"
+title:  "[Boost_Camp] JSTL, EL, Paging"
 subtitle: "2주차"
 date:   2017-07-11 19:40:00
 categories: [study]
