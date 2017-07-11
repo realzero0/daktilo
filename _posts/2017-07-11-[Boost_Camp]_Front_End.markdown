@@ -527,3 +527,116 @@ console.log('4');
 	   -> 3 -> 1 -> 2
 
 	   -> 1 -> 3 -> 2 
+
+
+
+# 에러 처리 #
+
+에러처리는 반드시 해야함.
+
+에러를 계속 넘겨서 에러 처리를 할만한 수준에서 처리할 수 있어야 함
+
+사용자가 잘못 입력해도 시스템이 동작
+
+- 문제를 해결할 수 있는 권한이 있는 부분에서 해결해야 함
+
+
+이 시스템이 죽지않도록 유지함
+
+예외처리, 로깅, 릴라이어블
+
+
+# data Attribute #
+
+<input data-album-id="A1234">
+
+$('input').data('album-id');
+
+document.querySelector('input').
+
+
+태그는 변경에 취약하다.
+
+api는 가급적 restful한게 좋음
+
+```
+<img src="http://yoursite.com/api/cotegory/delete/1">
+```
+get메소드 내에서 데이터가 변화할 수 있는 일을 하지 않는 편이 좋음
+
+get인 경우에는 객체 형태로 사용하면 됨
+{id:id, name:name}
+
+$param({id:id, name:name}) ->하고 문자열로 만들어줌
+
+es6
+{id, name}
+
+var a = parseInt("123");
+
+var a = +"123";
+
+"123"-0;
+
++, - 단항 연산자일 경우에 부호화임 숫자로 바꿈
+
+var x = !!"123";  // 불린으로 만들어줌
+
+"" ==> false
+!"" ==> true
+!!"" ==> false
+
+" " ==> true // 비지 않은 모든 문자열은 true임
+
+
+var a = 10;
+
+if(a) {
+	// 숫자는 0일때, 객체나 배열은 존재하는 것만으로도 true임
+}
+// null ==> false
+// undefined ==> false
+
+html에서는 반드시 붙여써야함 띄어쓰면 다른 토큰으로 인식할 수 있음
+
+id는 숫자로는 valid하지 않음 따라서 스트링이랑 결합해서 유니크하게 사용할 수 있음
+
+window 객체를 바인딩해서 사용하는 이유
+
+```
+<script type="text/javascript" src="/js/jquery-1.3.js"></script>
+<script type="text/javascript">
+$(function() {
+	$('.foo').click(function(e) {	// 여기에서 $가 누구것인지가 중요 그래서 이런 것을 막기 위해서 아래와 같이 씀 --> 이런 것은 아래의 버전으로 덮어씌워짐
+
+	}
+});
+</script>
+
+<script type="text/javascript" src="/js/jquery-0.6.js"></script>
+<script type="text/javascript">
+$()....
+</script>
+```
+
+
+```
+<script type="text/javascript" src="/js/jquery-1.3.js"></script>
+<script type="text/javascript">
+(function($) {
+	$(function() {
+		$('.foo').click(function(e) {	// 여기에서 $가 누구것인지가 중요 그래서 이런 것을 막기 위해서 아래와 같이 씀
+	
+		}
+	});
+}($));	// 이렇게 쓰면 window가 위의 jquery로 고정됨
+</script>
+
+<script type="text/javascript" src="/js/jquery-1.3.js"></script>
+<script type="text/javascript">
+$()....
+</script>
+```
+
+
+리플로우 브라우저는 어떻게해서든 동기적으로 실행함
