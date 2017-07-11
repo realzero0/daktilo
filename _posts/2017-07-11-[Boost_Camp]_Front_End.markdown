@@ -419,3 +419,109 @@ $('.test').on('click',function click() {
 
 # 10 이벤트 루프 #
 
+```
+function test1() {
+	test2();
+}
+
+function test2() {
+	test3();
+}
+
+function test3() {
+
+}
+
+test1();
+```
+
+
+callstack
+test3 -> 가장 먼저 나옴
+test2 ->
+test1 ->
+
+ajax, setTimeout, setInterval, click, on 등의 이벤트들은 다름(XMLHttpRequest - load 또한 포함됨) 모두 비동기
+
+
+```
+function test1() {
+	test2();
+}
+
+function test2() {
+	var timer = setTimeout(function() {
+		alert('timer');
+	}, 0);
+	test3();
+}
+
+function test3() {
+
+}
+
+test1();
+```
+
+callstack
+setTimeout -> 익명함수 -> 끝나면 test3이 들어옴
+test2 ->
+test1 ->
+
+--> 일반적인 설명
+
+callstack
+setTimeout -> 여기까지는 같음, 익명함수는 이벤트 큐로 들어감 -> test함수가 3으로 들어감 ->
+test2 ->
+test1 ->
+
+이벤트 루프가 익명함수를 가져가서 다시 콜스택에 집어 넣고 실행됨
+
+콜스택이 비어야 이벤트 함수들이 콜스택에 들어가서 실행됨
+
+
+```
+function test1() {
+	test2();
+}
+
+function test2() {
+	var xhr = new XMLHTTPRequest();
+	var result
+	xhr.addEventListener('load', function() {
+			
+	});
+	test3();
+}
+
+function test3() {
+
+}
+
+test1();
+```
+
+콭스택이 비어있을 때만, 실행됨
+
+
+```
+console.log(0);
+
+setTimeout(function() {
+	console.log(1);
+}, 0);
+
+setTimeout(function() {
+	console.log(2);
+}, 10);
+
+$.ajax("url").then(function() {
+	console.log(3);
+});
+
+console.log('4');
+```
+
+0 -> 4 -> 1 -> 2 -> 3
+	   -> 3 -> 1 -> 2
+	   -> 1 -> 3 -> 2 
