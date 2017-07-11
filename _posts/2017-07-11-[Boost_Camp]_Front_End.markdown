@@ -6,7 +6,7 @@ date:   2017-07-11 14:40:00
 categories: [study]
 ---
 
-#1 이상한 점 찾기.
+# 1 이상한 점 찾기. #
 
 ```
 function deleteCategoryRequest(categoryId){
@@ -199,16 +199,18 @@ call은 바인드랑 거의 비슷하게 사용.
 
 
 
-2
+# 2 #
 
-Q1: 실제로 이벤트를 등록, 처리할 때는 jquery로만 주로 하는지, 아니면 javascript addEventListener 메서드를 직접 사용 하는지 궁금합니다.
+> Q1: 실제로 이벤트를 등록, 처리할 때는 jquery로만 주로 하는지, 아니면 javascript addEventListener 메서드를 직접 사용 하는지 궁금합니다.
+
+서로 다른 코드를 해석하는게 굉장히 비효율적, 그래서 Jquery로 짜는 편이 더 낫기도 함
+
+기능 구현하는 시간만큼 디버깅하는 시간도 오래걸림, Product의 안정성, 속도 측면에서 라이브러리를 사용하는게 훨씬 좋음
 
 
+# 3 #
 
-
-3
-
-Q3. jsp에서 javscript 로딩은 바로 앞에서 했고 css 로딩은 안에서 했는데 주로 이렇게 많이 하는가요?
+> Q3. jsp에서 javscript 로딩은 바로 앞에서 했고 css 로딩은 안에서 했는데 주로 이렇게 많이 하는가요?
 
 
 
