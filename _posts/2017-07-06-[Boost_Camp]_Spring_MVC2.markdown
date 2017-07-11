@@ -102,7 +102,7 @@ public class MainController {
 MemberFormParam
 ```
 package carami.todo.dto;
-
+// Data Transfer Object, 전송할 때 값을 담아다님. Form에서 값을 넘길 때, 그 용도에 알맞게 채울 수 있기 때문에 사용함
 public class MemberFormParam {
     private String name;
     private String email;
@@ -212,7 +212,7 @@ public class MemberController {
                 memberFormParam.getEmail() == null || memberFormParam.getEmail().length() == 0 ||
                 memberFormParam.getPasswd1() == null || memberFormParam.getPasswd1().length() == 0 ||
                 memberFormParam.getPasswd2() == null || memberFormParam.getPasswd2().length() == 0) {
-            return "redirect:/"; // 이름, email, passwd1, passwd2 중에서 하나라도 입력하지 않은 것이 있을 경우 이동, 새로운 요청이 생긴다
+            return "redirect:/"; // 이름, email, passwd1, passwd2 중에서 하나라도 입력하지 않은 것이 있을 경우 이동, 새로운 요청이 생긴다, URL이 와야함
         }else {
             if (memberFormParam.getPasswd1().equals(memberFormParam.getPasswd2())) { //사용자가 입력한 암호가 같을 경우
                 Member member = new Member();
@@ -301,3 +301,8 @@ index.jsp
 </html>
 
 ```
+
+
+@Configuration은 설정파일이라는 것을 알려줌
+
+@ComponentScan은 빈을 등록하도록 하는 것이고, 해당 설정파일에 해당하는 빈 들을 등록하도록 함
