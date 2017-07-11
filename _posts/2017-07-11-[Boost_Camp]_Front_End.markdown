@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[Boost_Camp] Front End"
-subtitle: "시작 전 준비단계"
+subtitle: "2주차"
 date:   2017-07-11 14:40:00
 categories: [study]
 ---
@@ -358,7 +358,7 @@ show나 hide가 굉장히 복잡한 로직에 의해 사용됨
 </ul>
 ```
 
-
+<br><br>
 # 9 호이스팅 #
 
 ```
