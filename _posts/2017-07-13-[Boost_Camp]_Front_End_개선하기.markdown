@@ -27,7 +27,7 @@ js파일들이 있는 폴더 내에 패키지를 설정한다
 
 # 파일 업로드와 파일 다운로드
 
-1. pom.xml 파일에 파일 업로드와 관련된 라이브러리를 추가한다.
+1 pom.xml 파일에 파일 업로드와 관련된 라이브러리를 추가한다.
 
 ```
         <!-- file upload -->
@@ -43,7 +43,7 @@ js파일들이 있는 폴더 내에 패키지를 설정한다
         </dependency>
 ```
 
-2. ServletContextConfig 에 MultipartResolver  Bean을 설정한다.
+2 ServletContextConfig 에 MultipartResolver  Bean을 설정한다.
 
 원래 HTTP 프로토콜은 파일 업로드를 지원하지 않았다. 추후에 파일업로드를 위해서 Body내용에 Multipart라는 기능을 이용하여 파일을 업로드 할 수 있도록 하였다.
 text파일을 여러개의 part로 나눠서 각 파트별로 파일내용을 인코딩하여 포함시키는 방식인데, 이 방식은 email에서 먼저 사용된 방식이었다.
@@ -61,7 +61,7 @@ text파일을 여러개의 part로 나눠서 각 파트별로 파일내용을 �
     }
 ```
 
-3. WebInitializer 에 CharacterEncodingFilter를 설정하여 post로 값을 넘겨도 한글이 깨지지 않도록 하기
+3 WebInitializer 에 CharacterEncodingFilter를 설정하여 post로 값을 넘겨도 한글이 깨지지 않도록 하기
 
 form의 method를 post방식으로 해야만 파일을 업로드 할 수 있다. request의 body에 파일정보가 전달됙 때문이다. 파일 정보와 함께 여러가지 파라미터를 함께 전달할 수 있는데, 이때 한글이 깨지는 경우가 있다.
 한글이 깨지지 않도록 하기 위해서 보통 tomcat의 connector 설정에 encoding설정을 하고, 필터를 이용한다.
@@ -89,7 +89,7 @@ form의 method를 post방식으로 해야만 파일을 업로드 할 수 있다.
     }
 ```
 
-4. 파일 업로드 form 작성하기. /WEB-INF/views/files.jsp
+4 파일 업로드 form 작성하기. /WEB-INF/views/files.jsp
 
 
 form을 보면 enctype부분이 multipart/form-data 로 정의된 것을 알 수 있다.
@@ -115,7 +115,7 @@ input type="file"인 경우 name이 모두 file인 것을 알 수 있다. 이 �
 </html>
 ```
 
-5. upload & 다운로드
+5 upload & 다운로드
 
 - 파일정보를 원래는 db에 저장해야하는데, 이부분은 생략했다. db에 어떤 정보가 저장되어야 할지 고민해보자.
 - 윈도우는 파일 경로에 '\' 가 사용되고, 맥, 리눅스 등 유닉스계열 운영체제에서는 '/'가 사용된다. File.separator는 운영체제에 따라서 자동으로 해당 문자를 사용할 수 있도록 해준다.
