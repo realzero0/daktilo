@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[Boost_Camp] Front End 개선하기"
+title:  "[Boost_Camp] Spring 파일 업로드, 다운로드"
 subtitle: "2주차"
 date:   2017-07-13 15:40:00
 categories: [study]
