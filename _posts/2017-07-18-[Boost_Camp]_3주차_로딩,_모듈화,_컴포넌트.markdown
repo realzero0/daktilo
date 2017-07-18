@@ -359,6 +359,8 @@ x-(확장된)handlebars-template(핸들러 템플릿임)
 일반적으로 자바스크립트를 브라우저가 받으면 파싱함.
 타입이 브라우저에서 내려받지 못하는 타입이면 그대로 내려받음
 
+그대로 내려받은 것을 handlebars가 알아서 제거됨
+
 
 
 
@@ -473,9 +475,14 @@ view resolver를 이용해서 라이브러리에 추가할 수 있어야함
 
 
 
-14
+# 14 event emitter #
 
-event emitter
+
+상태만 호출하면 바인딩을 해줌
+
+컴포넌트를 활용해서 결합도를 낮추는 방법
+
+
 ```
 		function Rectangle(){
 		}
