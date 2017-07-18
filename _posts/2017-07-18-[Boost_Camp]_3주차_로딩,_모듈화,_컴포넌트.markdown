@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "[Boost_Camp] 3주차 FE"
+title:  "[Boost_Camp] Front End 로딩, 모듈화, 컴포넌트"
 subtitle: "3주차"
 date:   2017-07-18 15:40:00
 categories: [study]
@@ -207,8 +207,9 @@ function addTodo(data) {
 
 
 
-6
+# 6 모듈 패턴의 init 사용 #
 
+아래와 같은 모듈 패턴의 문제점은 외부에 굳이 노출했다는 점 1
 
 ```
 var categorylist = (function(){
@@ -254,13 +255,79 @@ $('div.more > button.btn').on('click', categorylist.viewMoreProductList);
 $(window).on("scroll", categorylist.scrollViewMoreProductList);
 ```
 
+```
+var categorylist = (function(){
+	var curruntCategoryId = 0;
+	funtion init() {
+		$('ul.event_tab_lst').on('click', 'li.item', categorylist.viewProductByCategory);
+		$('ul.event_tab_lst').on('click', 'li.item', categorylist.updateCount);
+		$('ul.lst_event_box').on('click', 'li.item', function(event){
+			event.preventDefault();
+			event.stopPropagation();
+			
+			var id = $(this).data('id');
+			var baseUrl = 'http://localhost:8080';
+			var url = baseUrl + '/product/detail/' + id;
+			window.location.href = url;
+		});
+		
+		// 처음에 전체 리스트 출력하도록
+		$('li.item:first-child').trigger('click');
+		
+		// 더보기 이벤트 추가
+		$('div.more > button.btn').on('click', categorylist.viewMoreProductList);
+		
+		$(window).on("scroll", categorylist.scrollViewMoreProductList);
+	}
+	
 
 
-7
+	function viewProductByCategory(event){
+		
+	}
+	
+	function viewMoreProductList(event){
+		
+	}
+		
+	function updateCount(event){
+	}
+		
+	function scrollViewMoreProductList(){
 
-mouseenter, mouseleave,moverover,mouseout의 차이는
+	}
 
-8
+	return {init : init};
+})();
+
+$(function() {
+	// init 시점을 정해줄 필요가 있음
+	categorylist.init();
+}
+```
+
+
+
+
+# 7 mouseenter, mouseleave, moverover, mouseout의 차이 #
+
+메일함이 있다고 하면, 마우스를 오버를 하면 테두리 선이 되고, 나가면 선이 없어지는 것을 사용(hover 선택자를 사용해도 됨)
+
+mouseover, mouseout은 element단위로 이벤트가 움직인다.
+
+```
+//li는 element단위로 움직임(li엘리먼트냐, a냐에따라 달라지는 것임)
+//enter는 안에있는 것은 모두 enter로 취급해줌
+<li>
+	<anchor> </anchor>
+	<button>X<button>
+<li>
+```
+
+
+
+
+# 8 모듈을 만들었을때는 camelcase 대문자로 작성하는 편이 나음 #
 
 // 대문자.
 var category = (function(){
@@ -276,40 +343,140 @@ var category = (function(){
                 }
 	}
 })();
-9
 
+
+# 9 핸들바 템플릿의 타입은 왜 이런가 #
+
+
+```
 <script id="project-item-template" type="text/x-handlebars-template"></script>
-10
+```
+type은 브라우저에서 읽음
 
+접미사 x-는(extend, 확장한다)
+x-(확장된)handlebars-template(핸들러 템플릿임)
+
+일반적으로 자바스크립트를 브라우저가 받으면 파싱함.
+타입이 브라우저에서 내려받지 못하는 타입이면 그대로 내려받음
+
+
+
+
+
+# 10 브레이스({})를 반드시 적어야함 #
+
+
+브레이스를 안적으면 merge할 때 브레이스를 안적어주는 경우가 많음 그래서 넣어서 코딩할 것
+
+```
 if(categoryId == 0 || categoryId == undefined)
    alert(1);
 else
    alert(2)
-11
+```
 
-Q2. [FE] Javascript의 모듈 패턴을 이용할 때 분리한 모듈 js 파일을 html에서 로드 하는 것과 js 파일에서 바로 로드 하는 방법 중 어떤 것이 더 좋을까요?
 
-Q3. [FE] npm으로 받은 라이브러리 브라우저에서 사용하는 방법(import)
+# 11 여러가지 질문들 #
 
-Q4. [FE] 간단한 데이터 입력일 경우 핸들바를 안쓰고 jquery css 선택자로 주입하는 것도 괜찮을까요?
-그리고 두개의 ul 태그에 번갈아서 넣을 경우 그냥 ul 태그 밖에 li 태그 템플릿을 두고 주입 해서 구현했는데 이렇게 사용해도 되는 걸까요?
+> Q2. [FE] Javascript의 모듈 패턴을 이용할 때 분리한 모듈 js 파일을 html에서 로드 하는 것과 js 파일에서 바로 로드 하는 방법 중 어떤 것이 더 좋을까요?
 
-12
+http1 기준. http2는 달라짐, 
 
-깃도 풀리퀘스트와 머지 과정이 어떻게 돌아가는지 이론적으론 알겠으나 구체적인 부분, 실제 사용하는 부분에서 조금 막막한게 사실입니다. 풀리퀘스트를 보낸 이후에도 푸쉬를 하면 변경내용이 반영되는 것은 같은데 그게 머지될 때는 어느 부분까지 되는 건지 잘 모르겠습니다.
+로딩 성능과 관련됨 - 네트워크가 문제, 요청횟수가 몇개냐(이미지, js 등)
 
-13
+html에서 사용하면 js요청을 하지 않을 수 있음
 
-이벤트 딜리게이션
+js를 사용하는 이유는 캐싱이 목적임
+
+내 서비스가 네트워크에 영향을 적게 받게 하기 위해서임.(구글은 전세계에 비슷한 속도로 검색창이 뜨기 바라기 때문에 페이지 내부에 스크립트를 집어넣기도 함), 완전 정적이거나, 완전 네트워크에 영향을 많이 받을 경우에 좋음
+
+나머지 성능은 cdn등으로 결정되기도 함
+
+
+> Q3. [FE] npm으로 받은 라이브러리 브라우저에서 사용하는 방법(import)
+
+web, node.js던지 npm을 이용해서 라이브러리를 가져옴
+
+1 CommonJS, AMD, UniversalModuleD(UMD)
+
+CommonJS(nodejs방식), A(async, 비동기)MD(requirejs방식, web에서 가져옴), UMD(ES6. ES7등을 이용한 import구문)
+
+nodeJS는 require를 이용해서 불러옴
+
+dist에서 가져다 쓰면 됨
+
+
+> Q4. [FE] 간단한 데이터 입력일 경우 핸들바를 안쓰고 jquery css 선택자로 주입하는 것도 괜찮을까요?
+
+
+간단한 것의 기준이 많이 달라지면 쓰는 게 더 나을 수 도 있음
+
+
+> 그리고 두개의 ul 태그에 번갈아서 넣을 경우 그냥 ul 태그 밖에 li 태그 템플릿을 두고 주입 해서 구현했는데 이렇게 사용해도 되는 걸까요?
+
+뭉쳐서 한번에 append만 하면 됨
+
+
+
+
+# 12 이벤트 딜리게이션 #
+
+관리하기가 편리함
+
+이벤트 딜리게이션 패턴에 맞는지를 검사하고 나가야함
+
+```
+(function(){
+  var wrapper = document.getElementById('wrapper');
+  var to_Eng = function(target){
+    if(target.id === "minwoo"){
+        target.innerHTML = "minwoo"
+    }else if(target.id === "chun"){
+        target.innerHTML = "chun"
+    }
+    return false;
+  }
+  var to_Kor = function(target){
+    if(target.id === "minwoo"){
+        target.innerHTML = "민우"
+    }else if(target.id === "chun"){
+        target.innerHTML = "천"
+    }
+    return false;
+  }
+  
+  wrapper.addEventListener('mouseover', function(e){
+    var target = e.target || e.srcElement;
+    console.log(target);
+    to_Eng(target);
+    event.stopPropagation();
+  },true);
+  
+  wrapper.addEventListener('mouseout', function(e){
+    var target = e.target || e.srcElement;
+    console.log(target);
+    to_Kor(target);
+    event.stopPropagation();
+  },true)
+  
+}();
+```
+같이 사용할 그룹을 잘 지정해놓아야함.
+
+# 13 패키지로 사용하는 이유 NPM #
+
+메이븐 처럼 모듈관리를 할 수 있음
+
+.gitignore에 node_modules/ 추가해야함.
+
+view resolver를 이용해서 라이브러리에 추가할 수 있어야함
+
+
 
 14
 
-지난 주 정리하기
-
-15
-
 event emitter
-
+```
 		function Rectangle(){
 		}
 		Rectangle.prototype = new eg.Component();
@@ -324,6 +491,10 @@ event emitter
 			console.log("aa");
 		})
 		a.trigger("click");
+```
+
+
+```
 function extend(superClass, def) {
 	var extendClass = function extendClass() {
 		// Call a parent constructor
@@ -347,7 +518,10 @@ function extend(superClass, def) {
 
 	return extendClass;
 };
+```
 
+
+```
 var Test = extend(eg.Component,{
 	init : function(){
 	},
@@ -362,3 +536,4 @@ function callback(e){
 	test.off(callback);
 }
 test.on("hi",callback);
+```
