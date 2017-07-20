@@ -2,9 +2,22 @@
 layout: post
 title:  "[Boost_Camp] 네이버 아이디로 로그인 Spring"
 subtitle: "3주차"
-date:   2017-07-20 20:40:00
+date:   2017-07-20 10:40:00
 categories: [study]
 ---
+
+# 일반적인 로그인 진행과정 Diagram #
+
+![](/assets/img/loginDiagram.png)
+
+- 보통 웹 어플리케이션은 로그인 폼을 제공한 후, 사용자가 id,암호를 올바르게 입력하였다면 세션에 로그인 정보를 저장하고 로그인 성공 화면을 보여준다.
+
+-	로그인한 사용자만 이용할 수 있는 URL에서는 세션에 올바른 값이 있는지 비교를 하게 된다.
+
+
+---
+
+
 
 # 1 내 어플리케이션 등록하기 #
 
@@ -217,6 +230,7 @@ AccessToken을 요청합니다. 네이버에서는 결과 값을 json 형태로 
  String accessToken = map.get("access_token");
  String tokenType = map.get("token_type"); 
 ```
+
 
 
 # 6 네이버 사용자 정보 가져오기 #
