@@ -39,8 +39,7 @@ public class Utils {
 }
 ```
 
-
-3. 인증 요청하기
+# 3 인증 요청하기 #
 
 이제 생성된 토큰과 ClinetID를 조합하여 네이버에 인증을 요청합니다. 이때 필요한 정보는 아래과 같습니다.
 
@@ -84,7 +83,7 @@ private static final String requestUrl = "https://nid.naver.com/oauth2.0/authori
 
 
 
-4. 토큰 검증하기
+# 4 토큰 검증하기 #
 
  로그인 창에서 아이디와 비밀번호를 입력하여 인증 요청이 무사히 진행되었다면, 위에서 설정한 redirect_uri의 주소로 토큰이 돌아오게 됩니다. 돌아오는 URL의 형식은 다음과 같습니다.
 
@@ -110,7 +109,7 @@ https://yourdomain.com/callback?state=YOURSTATETOKEN&code=NAVER_OAUTH_AUTHORIZAT
 ```
 
 
-5. AccessToken 요청하기
+# 5 AccessToken 요청하기 #
 
 AccessToken을 요청하면 이제서야 그 값을 가지고 네이버의 사용자 정보를 가져다 쓸 수 있습니다. 이 요청 과정의 결과 값은 네이버에서 xml과 json으로 만들어 놓았기에 xml과 json을 파싱할 수 있는 메소드를 Utils.java에 추가합니다. 
 덤으로 저는 파싱한 데이터를 Map에 넣고 사용하고 싶기 때문에 Map으로 변환하는 메소드도 넣었습니다.
@@ -220,7 +219,7 @@ AccessToken을 요청합니다. 네이버에서는 결과 값을 json 형태로 
 ```
 
 
-6. 네이버 사용자 정보 가져오기
+# 6 네이버 사용자 정보 가져오기 #
 
 5에서 가져온 AcessToken으로 사용자 정보를 가져와 보겠습니다. 필요한 데이터는 아래와 같습니다.
  
