@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "[Boost_Camp] JavaScript 객체 지향 정리"
-subtitle: "4주차"
+subtitle: "5주차"
 date:   2017-08-01 10:40:00
 categories: [study]
 ---
