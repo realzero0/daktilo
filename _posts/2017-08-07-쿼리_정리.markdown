@@ -1,0 +1,23 @@
+---
+layout: post
+title:  "쿼리 정리"
+subtitle: "유용한 쿼리 정리"
+date:   2017-08-07 18:40:00
+categories: [study]
+---
+
+## 일부 중복인 필드 중 1개만 업데이트##
+
+```
+update product_image a, (select min(file_id) file_id from product_image group by product_id) b 
+set a.type = 1 
+where a.file_id = b.file_id;
+``` 
+
+## 일부 중복인 필드 중 1개만 SELECT ##
+
+```
+select min(file_id) file_id 
+from product_image 
+group by product_id;
+```
