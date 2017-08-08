@@ -1,8 +1,8 @@
 ---
 layout: post
-title:  "[Boost Camp] FE 코드 구현"
+title:  "[Boost Camp] FE 클래스, 모듈 잘 사용하기"
 subtitle: "6주차"
-date:   2017-08-07 18:40:00
+date:   2017-08-08 18:40:00
 categories: [study]
 ---
 
@@ -44,3 +44,4 @@ ajax 부분은 따로 뺀 js파일로 작성해서 caching을 하면 더욱 효�
 -> 상호 의존적인 코드는 제거하기
 
 상호 의존적인 코드(순환 참조)는 버그의 원인이 되는 경우가 많다.
+
