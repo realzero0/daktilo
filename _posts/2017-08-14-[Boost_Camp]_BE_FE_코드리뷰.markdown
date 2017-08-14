@@ -119,3 +119,22 @@ return
 
 @PathVariable에 정규식 쓸 수 있음
 {productId:[0-9]+}
+
+
+logger가 static선언을 하는 이유는 옛날에는 service가 싱글톤이 아니었음
+
+싱글톤이 아닐 경우에는 static이 필요없음
+
+빈 앞에다가 @Scope 등을 사용하면 싱글톤이 아님, 세션별, 리퀘스트별, 매번 생성하는 경우가 있음
+
+in action, 강컴닷컴 -> 공부하기 좋은 책들
+
+java8, spring 기본 원리 책들이 필요함.
+
+
+
+DB 확장 Scale out Scale in
+
+db는 scale out하는게 너무 힘들다.
+
+그래서 db에는 가급적 일을 안시킨다.
