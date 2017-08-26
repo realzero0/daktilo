@@ -21,9 +21,12 @@ XSS가 전체 사이트에 심어지게 될 경우, 모든 유저의 정보가 �
 2. Persistent Script - 웹사이트 전체에서 동작할 수 있는 스크립트를 의미한다.
 
 
+Types of Defense
 
+1. Inbound
+	* 서버와 자기 자신을 방어
+	* SQL Injection, Remote File Inclusion, etc
 
-XSS의 원리
+2. Outbound
+	* Cross Site Scripting
 
-
-XSS의 예제
