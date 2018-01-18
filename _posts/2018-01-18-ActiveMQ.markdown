@@ -32,5 +32,9 @@ Message Queueing은 대용량 데이터를 처리하기 위한 배치 작업이�
  
  
 # Architecture
- ![](https://raw.githubusercontent.com/tjdcks12/reservation-system/master/resources/img/architecture1.jpg)
+ ![](https://raw.githubusercontent.com/realzero0/realzero0.github.io/master/assets/img/architecture1.jpg)
  
+ 컨트롤러에서 요청이나 데이터를 받게 되면, 이것을 당장 처리하는 것이 아니라 서비스에서 메세지큐에 넣어 놓고 큐에 들어오는 순서대로 요청을 처리하는 방법 Queue delegator에서 특정 시간 단위 등으로 큐를 처리하며, 들어오는 큐를 처리하는 컨버터를 두고 큐의 데이터를 DB에 맞는 데이터(객체 등)로 바꿔 DB에 저장한다.
+ 
+ 
+ 어딘가에 메세지를 전송하는 로직이 있음
