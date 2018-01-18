@@ -1,0 +1,36 @@
+---
+layout: post
+title:  "ActiveMQ"
+subtitle: "정의 및 사용법"
+date:   2018-01-18 13:40:00
+categories: [study]
+---
+
+ActiveMQ는 오픈 소스의 메세지 큐이다. JMS(J2EE에서 제공하는 메세지 처리 API)를 이용한다.
+
+# Java Message Service (JMS)
+JMS is part of Oracle's JEE specification. It's a Java API that encapsulates both message queue and publish-subscribe messaging patterns. JMS is a lowest common denominator specification - i.e. it was created to encapsulate common functionality of the already existing messaging systems that were available at the time of its creation.
+
+JMS is a very popular API and is implemented by most messaging systems. JMS is only available to clients running Java.
+
+JMS does not define a standard wire format - it only defines a programmatic API so JMS clients and servers from different vendors cannot directly interoperate since each will use the vendor's own internal wire protocol.
+
+Apache ActiveMQ Artemis provides a fully compliant JMS 1.1 and JMS 2.0 API.
+
+
+# Messege Queue
+- 비 동기(Asynchronous) : Queue에 넣기 때문에 나중에 처리 할 수 있다.
+- 비 동조(Decoupling) : 애플리케이션과 분리 할 수 있다.
+- 탄력성(Resilience) : 일부가 실패 시 전체에 영향을 받지 않는다.
+- 과잉(Redundancy): 실패 할 경우 재실행 가능
+- 보증(Guarantees): 작업이 처리된 걸 확인 할 수 있다.
+- 확장성(Scalable): 다수의 프로세스들이 큐에 메시지를 보낼 수 있다.
+
+Message Queueing은 대용량 데이터를 처리하기 위한 배치 작업이나, 체팅 서비스, 비동기 데이터를 처리할때 사용한다. 프로세스단위로 처리하는 웹 요청이나 일반적인 프로그램을 만들어서 사용하는데 사용자가 많아지거나 데이터가 많아지면 요청에 대한 응답을 기다리는 수가 증가하다가 나중에는 대기 시간이 지연되어서 서비스가 정상적으로 되지 못하는 상황이 오기 때문에 기존에 분산되어 있던 데이터 처리를 한곳으로 집중하면서 메세지 브로커를 두어서 필요한 프로그램에 작업을 분산 시키는 방법을 하고 싶었기 때문이다.
+
+ Producer(Sender) > Queue(Message) > Customer(Receiver)
+ 
+ 
+# Architecture
+ ![](https://raw.githubusercontent.com/tjdcks12/reservation-system/master/resources/img/architecture1.jpg)
+ 
