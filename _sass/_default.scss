@@ -6,7 +6,7 @@ body {
 
 a {
     color: $cloudy;
-    font-size: 22px;
+    font-size: 20px;
     text-decoration: none;
 
     &:hover {
@@ -15,8 +15,7 @@ a {
 }
 
 p {
-    font-size: 1.3em;
-    line-height: 32px;
+    font-size: 16px;
 }
 
 img {
@@ -49,7 +48,7 @@ blockquote {
 
     p {
         display: inline;
-        font-size: 1.3em;
+        font-size: 16px;
         color: $cloudy;
         font-weight: 400;
         &:before { content: "“ "; }
@@ -126,13 +125,21 @@ strong {
 
 .page-title__text {
     font-weight: 700;
-    font-size: 70px;
+    font-size: 40px;
 }
 
 .page-title__subtitle {
     font-weight: 400;
-    font-size: 22px;
+    font-size: 16px;
     color: $cloudy;
+}
+
+.post-title-blog_title {
+    text-align: center;
+}
+
+.post-title-blog_title .page-title__text {
+    color: #333333;
 }
 
 .post-title {
@@ -140,11 +147,11 @@ strong {
 }
 
 .post-title__text {
-    font-size: 40px;
+    font-size: 30px;
 }
 
 .post-title__subtitle {
-    font-size: 20px;
+    font-size: 16px;
 }
 
 /* =Post teasers */
@@ -156,17 +163,19 @@ strong {
 }
 
 .post-teaser {
-    margin-bottom: 45px;
+    margin-bottom: 20px;
     font-weight: 700;
 }
 
 .post-teaser__title {
-    font-size: 24px;
+    font-size: 18px;
+    margin-left: 10%;
     color: $iron;
 }
 
 .post-teaser__date {
-    font-size: 22px;
+    font-size: 12px;
+    margin-right: 10%;
     float: right;
     vertical-align: middle;
     color: $cloudy;
@@ -191,8 +200,7 @@ strong {
 }
 
 .explore__label {
-    font-size: 22px;
-    margin-top: 15px;
+    font-size: 20px;
 }
 
 .categories {
@@ -212,7 +220,7 @@ strong {
 }
 
 .categories__item:after {
-    content: "/";
+    content: "";
     margin-left: 6px;
     color: $cloudy;
 }
@@ -247,9 +255,11 @@ strong {
 
 @media (max-width: 800px) {
     /* =Base */
+    a {
+        font-size: 12px;
+    }
     p {
-        font-size: 1em;
-        line-height: 1.6;
+        font-size: 14px;
     }
     blockquote p {
       font-size: 1em;
@@ -274,20 +284,25 @@ strong {
     }
 
     .page-title__text {
-        font-size: 40px;
+        font-size: 30px;
     }
 
     .page-title__subtitle {
-        font-size: 18px;
+        font-size: 16px;
+    }
+
+    .explore__label {
+        font-size: 14px;
     }
 
     .post-teaser__title {
-        font-size: 22px;
+        font-size: 12px;
+        margin-left: 0;
         @include centered-block();
     }
 
     .post-teaser__date {
-        font-size: 16px;
+        font-size: 10px;
         margin-top: 10px;
         float: none;
         @include centered-block();
@@ -298,11 +313,11 @@ strong {
     }
 
     .post-title__text {
-        font-size: 28px;
+        font-size: 20px;
     }
 
     .post-title__subtitle {
-        font-size: 18px;
+        font-size: 16px;
     }
 }
 
