@@ -256,10 +256,7 @@ strong {
 @media (max-width: 800px) {
     /* =Base */
     a {
-        font-size: 12px;
-    }
-    p {
-        font-size: 14px;
+        font-size: 16px;
     }
     blockquote p {
       font-size: 1em;
@@ -292,11 +289,11 @@ strong {
     }
 
     .explore__label {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .post-teaser__title {
-        font-size: 12px;
+        font-size: 16px;
         margin-left: 0;
         @include centered-block();
     }
