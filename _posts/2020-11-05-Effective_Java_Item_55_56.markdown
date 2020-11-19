@@ -3,7 +3,7 @@ layout: post
 title:  "Effective java item 55, 56"
 subtitle: "이펙티브 자바 정리"
 date:   2020-11-05 10:47:00
-categories: [news]
+categories: [study]
 ---
 
 ## Item 55: Optional을 신중하게 리턴하라.

@@ -3,7 +3,7 @@ layout: post
 title:  "Effective java item 68"
 subtitle: "이펙티브 자바 정리"
 date:   2020-11-12 16:47:00
-categories: [news]
+categories: [study]
 ---
 
 
