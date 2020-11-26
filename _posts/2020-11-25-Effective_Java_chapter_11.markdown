@@ -426,3 +426,291 @@ mutable 클래스를 작성해야하면 2가지 옵션이 있다.
 
 ## Item 80: executor, task, stream을 쓰레드보다 선호하라
 
+이 책의 첫 판본에서는 simple work queue에 관한 코드가 있었다.
+
+백그라운드 쓰레드에서 비동기로 클라이언트가 task를 추가하고 task가 끝나면 백그라운드 쓰레드를 종료할 수 있게 했다.
+
+그렇지만, safety, liveness failure가 쉽게 발생하게 된다.
+
+<br>
+
+이제는 더이상 이런 코드를 작성할 필요가 없다.
+
+두번째 판본이 나올때 `java.util.concurrent`가 자바에 추가되었다.
+
+유연한 인터페이스 베이스의 태스크 실행 프레임워크인 `Executor Framework`을 가지고 있는 패키지이다. 
+
+```java
+ExecutorService exec = Executors.newSingleThreadExecutor();
+```
+
+위와 같이 한줄의 코드로 간단히 work queue를 만들수도 있다.
+
+```java
+exec.execute(runnable);
+```
+
+runnable객체를 전달하기도 편하다.
+
+```java
+exec.shutdown();
+```
+
+종료를 위해서는 위와 같이 할 수도 있다.
+
+<br>
+
+다른 여러가지를 executor를 사용해서 할수가 있다
+- 특정 task의 종료를 기다릴 수 있다. (get 메소드를 사용해서)
+- 어떤, 또는 모든 task의 종료를 기다릴 수 있다. (invokeAny or invokeAll 메소드 사용)
+- executor 서비스의 종료를 기다릴 수 있다. (awaitTermination 메소드 사용)
+- task의 결과를 끝날 때마다 가져올 수 있다. (ExecutorCompletionService 사용)
+- task를 특정 시간 또는 주기적으로 실행하도록 할 수 있다. (ScheduledThreadPoolExecutor 사용)
+
+<br>
+
+큐에서의 요청을 처리하기 위한 하나 이상의 쓰레드가 필요하다면, thread pool이라는 static factory를 만들 수 있다.
+- 지정된, 혹은 변하는 크기의 pool을 만들 수 있다.
+- `java.util.concurrent.Executors` 클래스는 보통 상황에서 필요한 static factory들을 제공해주고 있다.
+- 보통 상황과 다른 pool이 필요하면 `ThreadPoolExecutor`를 사용하면 된다.
+
+<br>
+<br>
+
+작은 프로그램이나 가벼운 서버에서는 `Executors.newCachedThreadPool`가 설정이 필요없이 일반적으로 잘 동작하므로 좋은 선택지가 될 수 있다.
+
+cached thread pool은 높은 로드의 운영 서버에는 적합하지 못하다.
+- cached thread pool은 task가 queue에 들어가지 않고 바로 쓰레드에서 실행된다.
+- 만약 서버 load가 매우 높은 상태에서 task가 계속 들어오면 쓰레드가 계속 생기게 되서 더 상황이 나빠지게 된다.
+- 높은 로드의 운영 서버에서는 `Executors.newFixedThreadPool`를 사용하는 편이 낫다.
+    - 정해진 숫자의 쓰레드를 설정할 수 있다
+
+<br>
+<br>
+
+쓰레드와 직접 작업하는 것도 피해야 한다.
+- 직접 작업하게 되면 `Thread` 클래스는 일의 단위(the unit of work)와 실행 방식(the execution mechanism)을 같이 정의해야 한다.
+- executor framework에서는 일의 단위(the unit of work)와 실행 방식(the execution mechanism)이 분리된다.
+    - 주된 추상화는 일의 단위(the unit of work)이다. Runnable, Callable(값을 리턴하지 않고 예외를 던질 수 있음)의 2가지 종류가 있다.
+    - 실행은 주로 `executor service`에서 진행되고, 태스크를 만들고 `executor service`가 실행하도록 하면할 필요에 따른 execution policy를 선택할 수 있는 유연성이 생긴다.
+        - Executor Framework은 추상화를 `실행(execution)`에 했고
+        - Collections Framework은 `데이터의 집합(aggregation)`에 했다.
+
+<br>
+<br>
+
+Java 7에서 Executor Framework은 fork-join task를 지원했다.
+- fork-join task는 태스크를 더 작은 하위 캐스크로 분리할 수 있다.
+- `ForkJoinPool`은 분할된 태스크를 실행할 수 있을 뿐 아니라 하나의 태스크에서 다른 태스크의 실핼을 "훔칠" 수도 있다. 
+    - 모든 CPU를 바쁘게 만들어서 높은 수준의 CPU 활용률, higher throughput, and lower latency을 만들 수 있게 되었다.
+- `Parallel streams`(Item 48)은 fork join pool위에 작성되었고 적은 노력으로도 높은 성능상 이점을 준다.
+
+<br>
+<br>
+
+결론, 
+executor 프레임워크를 활용해서 잘 사용하자.
+
+<br>
+<br>
+
+## Item 81: `wait` and `notify`보다는 concurrency utilities를 선호하라
+
+이 책의 첫 판본에서는 wait and notify를 적절히 사용하는 방법 대해서 이야기했다.
+
+여전히 맞는 말이긴하지만, 지금은 그렇게 중요한 내용이 아니다.
+
+<br>
+<br>
+
+Java5 이후에, 높은 레벨의 concurrency utilities가 제공되었다. wait and notify를 사용해서 직접 정의해야했던 것들이 유틸로 제공되고 있다.
+
+wait and notify를 적절히 사용하는 것이 어렴다는 것을 감안하면, concurrency utilities를 사용해야한다.
+
+<br>
+<br>
+
+`java.util.concurrent` 패키지의 유틸은 3가지 종류가 있다.
+- Executor Framework (Item 80)
+- concurrent collections
+- synchronizers
+
+첫번째는 이미 논의되었고, Concurrent collections, synchronizers가 지금 챕터에서 논의한다.
+
+<br>
+<br>
+
+concurrent collections
+- List, Queue, and Map과 같은 표준 컬렉션의 높은 성능의 병렬처리 구현체이다.
+- 높은 병렬성을 위해서 구현체들은 동기화를 내부적으로 처리한다.
+- 병렬처리를 concurrent collections에서 제외하는 것은 불가능하고, 병렬처리가 아닌 곳에 사용되면 성능저하가 나타날 수 밖에 없다.
+- 컬렉션 내부의 병렬처리를 제거하지 못하기 때문에, 여러 메소드 실행을 원자적(atomically)으로 결합할 수 없다.
+    - state-dependent modify operations 같은 것들은 유용해서 Java8에 default method로 추가되었다.
+    - Map의 putIfAbsent(key, value) 메소드는 null이거나 없는 경우에 데이터를 추가한다.
+
+```java
+// Concurrent canonicalizing map atop ConcurrentMap - not optimal
+private static final ConcurrentMap<String, String> map =
+                                                   new ConcurrentHashMap<>();
+                                           
+public static String intern(String s) {
+    String previousValue = map.putIfAbsent(s, s);
+    return previousValue == null ? s : previousValue;
+}
+```
+    
+```java
+// Concurrent canonicalizing map atop ConcurrentMap - faster!
+public static String intern(String s) {
+    String result = map.get(s);
+    if (result == null) {
+        result = map.putIfAbsent(s, s);
+        if (result == null)
+            result = s;
+    }
+    return result;
+}
+```
+
+ConcurrentHashMap은 get같이 데이터를 가져오는 오퍼레이션에 최적화되어있기 때문에, 위와 같이 할 수 있다.
+
+
+Concurrent collections은 대체로 synchronized collections을 필요없게 만들었다.
+
+
+ConcurrentHashMap은 Collections.synchronizedMap보다 선호되어야 한다. 이 경우 또한 병렬 어플리케이션에서 성능이 매우 향상된다.
+
+<br>
+<br>
+
+일부 컬렉션 인터페이스는 blocking operations(성공할 때까지 wait또는 block)을 상속하고 있다.
+- `BlockingQueue extends Queue`가 있고, take 메소드 처럼 큐가 비어있을 때는 기다리고 큐의 element를 가져오는 메소드도 있다.
+    - 이는 BlockingQueue가 work queues(producer-consumer queue로 알려진)로 사용될 수 있다는 것을 의미한다.
+        - 하나 이상의 producer가 큐에 데이터를 넣고, 하나 이상의 consumer가 데이터를 가져올 수 있다.
+    - 대다수의 `ExecutorService(ThreadPoolExecutor와 같은)`는 BlockingQueue를 사용한다.
+    
+
+<br>
+<br>
+
+Synchronizers는 쓰레드가 여러 작업을 조정하면서 다른 쓰레드를 기다릴 수 있게 하는 객체이다.
+
+가장 널리 사용하는 Synchronizer는 CountDownLatch와 Semaphore이다. CyclicBarrier와 Exchanger도 가끔 사용된다. 가장 강력한 Synchronizer는 Phaser아더,
+
+- CountDownLatch
+    - 기다리는 프로세스가 실행되기 위해서 생성자에 int값을 정의하고 countDown 메소드가 설정된 횟수만큼 호출되면 결국 waiting thread가 진행할 수 있게 해준다.
+    
+```java
+// Simple framework for timing concurrent execution
+public static long time(Executor executor, int concurrency,
+            Runnable action) throws InterruptedException {
+    CountDownLatch ready = new CountDownLatch(concurrency);
+    CountDownLatch start = new CountDownLatch(1);
+    CountDownLatch done  = new CountDownLatch(concurrency);
+
+    for (int i = 0; i < concurrency; i++) {
+        executor.execute(() -> {
+            ready.countDown(); // Tell timer we're ready
+            try {
+                start.await(); // Wait till peers are ready
+                action.run();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                done.countDown();  // Tell timer we're done
+            }
+        });
+    }
+
+    ready.await();     // Wait for all workers to be ready
+    long startNanos = System.nanoTime();
+    start.countDown(); // And they're off!
+    done.await();      // Wait for all workers to finish
+    return System.nanoTime() - startNanos;
+}
+```
+
+위 예제는 3개의 CountDownLatch를 이용해서 병렬 상황에서 실행 시간을 구하는 예제이다.
+ 
+위 메소드는 3개의 CountDownLatch를 사용한다.
+- ready는 worker 쓰레드에서 timer 쓰레드에 준비가 되었음을 알린다.
+- start는 마지막 worker 쓰레드가 ready.countDown을 호출하면 timer 쓰레드에서 start.countDown를 호출하게 된다.
+- done은 마지막 worker 쓰레드가 done.countDown을 실행하면 최종 실행된다.
+
+위 예제에서 주의해야 할 것들이 있다.
+- executor가 time 메소드에 concurrency level만큼의 쓰레드를 만드는 것을 허용해야한다.
+- 그렇지 않으면 thread starvation deadlock이 생기게 된다.
+- worker 쓰레드가 InterruptedException를 catch하게 되면, Thread.currentThread().interrupt()로 다시 interrupt를 확인하고 리턴해서 종료된다.
+    - 이는 executor가 적절하다고 보는 interrupt를 가능하게 한다.
+- interval 타이밍을 위해서는 System.nanoTime을 사용해야한다.(System.currentTimeMillis 를 사용해서는 안된다.)
+    - System.nanoTime은 정확하고 정밀하고, 시스템의 내의 시계에 영향을 받지 않는다.
+- 이 예제의 코드는 정확한 타이밍 결과를 내지 않는다. (action이 충분한 시간동안 동작하지 않는다면)
+
+정확한 microbenchmarking은 꽤나 힘든일다고 jmh같은 특별한 프레임워크를 사용하는 편이 가장 정확할 수 있다.
+
+앞선 예제는 하나의 CyclicBarrier or Phaser로 바꿀 수도 있다. 코드는 간결해지지만 더 이해하기 힘들어 질 수 있다.
+
+
+<br>
+<br>
+
+기존에 `wait` and `notify`로 사용하던 코드들의 유지보수.
+
+```java
+// The standard idiom for using the wait method
+synchronized (obj) {
+    while (<condition does not hold>)
+        obj.wait(); // (Releases lock, and reacquires on wakeup)
+    ... // Perform action appropriate to condition
+}
+```
+
+- `wait`은 위와 같이 `synchronized` 블록 내에서 사용해야한다.
+- 위의 wait loop idiom은 wait 메소드를 실행하기 위해서만 사용해야한다. loop 밖에서 wait 메소드를 실행해서는 안된다.
+- liveness를 위해 condition에 따라서 waiting이 되기 전에 컨디션이 이미 충족되어서 통과하는 것을 테스트해야한다.
+    - 조건이 충족되고 notify (or notifyAll) 메소드가 이미 실행되면 이미 있는 쓰레드가 waiting 상태에서 변경될 것이라고 보장할 수 없기 때문이다.
+- safety를 위해서 waiting이후에 조건이 충족되지 않는 것을 테스트 해야한다.
+    - 조건 충족이 안되었는데도 실행되면 lock의 불변성이 깨질 수 있다.
+
+<br>
+<br>
+
+조건이 충족되지 않을 때, thread가 wake up 해야하는 경우
+- 다른 쓰레드가 락을 획득하고 state을 변경하는 경우(하나의 쓰레드가 notify를 호출하고 기다리는 thread가 wake up하기 전에)
+- 조건이 맞지 않음에도 다른 쓰레드가 실수로 혹은 악의적으로 notify를 호출할 수 있다. 외부에 공개된 객체를 waiting하게 되면 이런 문제가 발생할 수 있다. 
+    - 공개된 객체의 어떤 동기화된 블록 내의 wait 메소드도 이 문제가 발생할 수 있다.
+- notifying thread는 과도하게 관대할(generous) 수 있다. 일부 worker 쓰레드만 조건을 만족했음에도 notifyAll 메소드를 호출해서 전체를 wake up할 수 있다.
+- waiting thread가 notify없이도 wake up될 수 있다. `spurious wakeup` (Java9)를 통해서.. OS에서 특정 시그널로 여러 wait condition이 깨어날 수 있는 상황..
+
+
+<br>
+<br>
+
+관련 이슈는 notify or notifyAll 중 어떤 것을 사용하느냐이다.
+- notify는 싱글 waiting 쓰레드, notifyAll은 모든 waiting 쓰레드
+- 항상 notifyAll을 사용해야 한다는 주장이 있다.
+    - 이는 합리적이고 산즁헌 조언이다.
+    - 항상 맞는 값을 얻을 수 있다. wake up 해야하는 쓰레드를 작동 시키기 때문에.
+    - 다른 쓰레드도 깨우게 되지만 프로그램의 정확성(correctness)에는 영향을 미치지 않는다.
+        - 이 쓰레드들은 조건을 확인하고 다시 waiting 상태가 될 것이기 때문이다.
+- 최적화를 위해서 notify를 선택할 수도 있다.
+    - 이 경우에도 관계없는 쓰레드의 실수로 혹은 작의적인 wait을 막기 위해서는 notifyAll을 사용하는 경우가 나을 수 있다.
+    
+<br>
+<br>
+
+결론,
+
+`java.util.concurrent` 대신 `wait and notify`를 직접 사용하는 것은 어셈블리 코드로 작성하는 것과 비교될 수 있다.
+
+확실한 이유가 없다면 `java.util.concurrent`를 사용하고, `wait and notify`를 사용해야한다면 `notifyAll`을 선호하자.
+
+<br>
+<br>
+<br>
+<br>
+
+## Item 82: 쓰레드 safety에 대해서 문서화하라
+
+
+
