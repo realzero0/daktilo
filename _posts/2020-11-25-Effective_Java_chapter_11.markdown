@@ -712,5 +712,104 @@ synchronized (obj) {
 
 ## Item 82: 쓰레드 safety에 대해서 문서화하라
 
+클래스의 메소드가 병렬적으로 사용될 때 어떻게 동작하는 지는 클라이언트에게 매우 중요한 문제다.
+
+클래스의 동작을 문서화하지 않으면, 불충분한 동기화, 과도한 동기화로 인한 에러가 발생할 수 있다.
+
+<br>
+<br>
+
+메소드의 `synchronized` 키워드만으로 쓰레드 safe하다고 판단하기 쉽다.
+
+이는 몇가지 면에서 틀렸다
+- `synchronized` 키워드는 구현 세부사항(implementation detail)으로서의 역할을 하지 API로서의 역할은 아니다.
+- 스레드 safety에는 몇가지 레벨이 있다. 어떤 레벨인지를 잘 문서화해야 안전한 병렬 사용이 가능하다.
+    - Immutable: 클래스의 객체가 불변인 경우. 외부적 동기화가 필요하지 않다. String, Long, and BigInteger을 예로 들 수 있다.
+    - Unconditionally thread-safe: 클래스의 객체는 mutable. 클래스는 충분한 내부적 동기화를 하고 있다. 외부적 동기화가 필요없다. AtomicLong and ConcurrentHashMap가 예시
+    - Conditionally thread-safe: unconditionally thread-safe과 비슷하다. 안전한 병렬처리를 위해서 일부 메소드가 외부적 동기화가 필요하다는 점이 다르다. Collections.synchronized와 같은 wrapper가 예제가 될 수 있다.
+    - Not thread-safe: 클래스의 객체가 mutable하다. 병렬적으로 사용하기 위해서 클라이언트는 반드시 메소드를 외부적 동기화 블록을 만들어야한다. ArrayList and HashMap이 예
+    - Thread-hostile: 모든 메소드 호출이 외부 동기화 블록으로 감싸져 있다면, 이 객체는 병렬 사용을 위해서는 부적절하다.
+        - 보통 static 데이터를 동기화 없이 변경할 경우 발생한다.
+        - 클래스나 메소드가 thread-hostile함이 발견되면 고쳐지거나 deprecated된다.
+        - item 78의 generateSerialNumber가 내부 동기화가 없이 thread-hostile할 수 있다.
+
+Java Concurrency in Practice의 the thread safety annotations(Immutable, ThreadSafe, and NotThreadSafe)과 일부 일치한다.
+
+<br>
+<br>
+
+conditionally thread-safe 클래스를 문서화하는 것은 주의가 필요하다.
+
+어떤 상황에서 외부 동기화가 필요한지 문서화해야 한다. 때로는 어떤 lock이 필요한지도 문서화해야한다.
+
+보통은 클래스 자기 자신이지만, Collections.synchronizedMap같은 경우에는 다르다.
+
+> collection view를 순회할 때는 리턴된 map을 순회해야 한다.
+
+```java
+Map<K, V> m = Collections.synchronizedMap(new HashMap<>());
+Set<K> s = m.keySet();  // Needn't be in synchronized block
+    ...
+synchronized(m) {  // Synchronizing on m, not s!
+    for (K key : s)
+        key.f();
+}
+```
+
+이를 따르지 않으면, 알수없는(non-deterministic) 동작이 생길 수 있다.
+
+<br>
+<br>
+
+보통은 클래스의 doc comment로 thread safety를 남길 수 있다.
+
+메소드도 특별한 thread safety 속성이 있다면 doc comment를 달 수 있다.
+
+static factory 메소드의 경우에는 리턴된 객체의 thread safety를 반드시 명시해야한다.
+
+<br>
+<br>
+
+공개된 lock을 사용하게 되면 클라이언트가 메소드 실행을 원자적(atomic)으로 할 수 있게 된다. 그렇지만 유연성은 낮아진다.
+
+ConcurrentHashMap과 같은 Concurrent Collection은 사용할 수 없다.
+
+공개된 락을 더 긴 기간동안 가지고 있음으로 인해서 denial-of-service attack이 가능할 수도 있다.
+
+이런 공격을 막기 위해서는 private lock object를 사용해야 한다.
+
+```java
+// Private lock object idiom - thwarts denial-of-service attack
+private final Object lock = new Object();
+
+public void foo() {
+    synchronized(lock) {
+        ...
+    }
+}
+```
+
+private lock object가 외부에서 접근 불가능하기 때문에, 클라이언트가 객체의 동기화를 방해하는 것이 불가능하다.
+
+lock필드가 final로 선언된 것에 주목해야한다.
+- 이는 객체 레버퍼런스를 실수로 바꾸지 않도록 해주어서 catastrophic unsynchronized access(재앙적 비동기화된 접근(?))를 방지할 수 있다.
+- lock 필드는 항상 final로 정의되어야 한다.
+    - 예제와 같이 일반적인 monitor lock이나 `java.util.concurrent.locks` 패키지의 락을 사용할때는 맞다
+
+위의 예제인 private lock object idiom은 unconditionally thread-safe 클래스에만 사용할 수 있다.
+
+Conditionally thread-safe classes는 private lock object idiom 사용이 불가능하다. 어떤 락이 어떤 상황에 필요한지 문서화 할 수 밖에 없다.
+
+private lock object idiom은 상속을 위해 설계된 클래스에 잘 맞다. 상위 클래스가 lock을 사용하게 되면 하위 클래스는 상위 클래스에 방해 받게 된다.
+
+다른 목적에서 같은 락을 사용함으로써, 하위 클래스와 base 클래스는 결국에 서로의 발목을 잡게 도리 수도 있다.
+
+이는 이론적인 문제가 아니고.. 실제 Thread 클래스에서 일어나고 있는 일이다.
 
 
+<br>
+<br>
+
+결론,
+
+스레드 safety는 여러 단계가 있기 때문에 synchronized 키워드만으로는 부족하고 적절히 문서화해야 한다.
