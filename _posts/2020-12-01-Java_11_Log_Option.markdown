@@ -11,3 +11,15 @@ OpenJDK11은 OpenJDK8 이후의 첫번째 LTS(긴 기간 지원해주는)버전�
 
 ## JVM Log label
 
+보통 자바 코드로 작성된 코드는 아래와 같다.
+
+```java
+Logger logger = LogFactory.getLooger("core-logger");
+logger.info("this is core logger log");
+```
+
+```java
+2020-02-05 10:50:52.670  INFO [core-logger] [22] [pool-13-thread-1]: this is core logger log
+```
+
+실제 결과도 위와 같이 나온다.
