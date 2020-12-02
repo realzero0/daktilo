@@ -22,4 +22,4 @@ logger.info("this is core logger log");
 2020-02-05 10:50:52.670  INFO [core-logger] [22] [pool-13-thread-1]: this is core logger log
 ```
 
-실제 결과도 위와 같이 나온다.
+실제 결과도 위와 같이 나온다.ㅏ

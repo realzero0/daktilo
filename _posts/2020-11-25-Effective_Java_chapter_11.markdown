@@ -813,3 +813,187 @@ private lock object idiom은 상속을 위해 설계된 클래스에 잘 맞다.
 결론,
 
 스레드 safety는 여러 단계가 있기 때문에 synchronized 키워드만으로는 부족하고 적절히 문서화해야 한다.
+
+
+## Item 83: lazy initialization을 신중하게 사용하라
+
+Lazy initialization은 값이 필요할 때까지 필드의 초기화를 늦추는 것이다. 값이 절대 필요하지 않다면, 필드는 절대 초기화되지 않는다.
+
+static이나 instance필드 모두에 적용가능한 방법이다. 최적화에 도움이 될 뿐 아니라 클래스나 인스턴스의 초기화의 해로운 순환 관계(circularities)를 깨트릴 수 있다.
+
+<br>
+<br>
+
+다른 모든 최적화와 같이 필요한게 아니면 하면 안된다.
+
+Lazy initialization은 양날의 검이다.
+
+- 클래스 초기화나 객체 생성의 비용을 줄인다.
+    - 반면 Lazy initialization되는 필드에 접근 비용을 늘린다.
+- 필드의 어느부분이 초기화가 필요한지에 따라서
+    - 초기화에 드는 비용이 달라지고,
+    - 초기화 이후에 얼만큼 접근되는지도 달라지고
+    - 이에 따라서 Lazy initialization이 성능을 저하시킬 수도 있다.
+
+<br>
+<br>
+
+결국 Lazy initialization이 필요한 경우가 있다.
+
+두가지 조건을 만족해야한다.
+
+- 특정 필드가 특정 클래스의 객체들의 일부에 접근하고
+- 초기화하는 데 드는 비용이 클 때
+
+Lazy initialization을 적용했을 때와 안했을 때의 성능을 비교해서 측정해볼 수 있다.
+
+<br>
+<br>
+
+멀티 쓰레드 환경에서 두개 이상의 쓰레드가 Lazy initialization 필드를 공유하면, 동기화가 필요하게 된다. 그렇지 않으면 심각한 버그를 초래할 수 있다.
+
+이 챕터에서 다루는 초기화 방법은 전부 thread-safe하다.
+
+<br>
+<br>
+
+```java
+// Normal initialization of an instance field
+private final FieldType field = computeFieldValue();
+```
+
+보통 상황에서는 위와 같은 일반적인 초기화 방식이 선호된다. 위 예제는 final 키워드를 사용해서 변수를 초기화했다.
+
+```java
+// Lazy initialization of instance field - synchronized accessor
+private FieldType field;
+
+private synchronized FieldType getField() {
+    if (field == null)
+        field = computeFieldValue();
+    return field;
+}
+```
+
+위 예제는 Lazy initialization이 적용된 예제이다. Lazy initialization에서 순환 참조(initialization circularity)를 없애기 위해서는 synchronized 접근자를 사용하면된다.
+
+앞선 두 예제는 static 필드에 적용되더라도 변경되지 않는다. 필드와 접근자에 static 키워드만 추가해주면 된다.
+
+<br>
+<br>
+
+성능을 위해서 static필드를 Lazy initialization을 할 필요가 있다면, lazy initialization holder class idiom을 사용할 수 있다.
+
+```java
+// Lazy initialization holder class idiom for static fields
+private static class FieldHolder {
+    static final FieldType field = computeFieldValue();
+}
+
+private static FieldType getField() { return FieldHolder.field; }
+```
+
+이 idiom은 클래스가 사용될때까지 초기화되지 않음을 보장한다.
+
+getField 접근자 메소드가 호출될때, FieldHolder.field 필드를 처음 읽어드린다. 읽어들일때 FieldHolder의 초기화가 일어난다.
+
+- getField 메소드는 synchronized 키워드가 없이 필드 접근만 한다는 장점이 있다.
+    - lazy initialization은 접근에 있어서는 어떤 비용도 들지 않는다.
+    - 일반적인 VM은 필드에 접근할 때, 클래스 초기화하는 경우 동기화한다.
+    - 클래스가 초기화되면 VM이 코드를 패치해서 다음 접근 부터는 추가적인 확인(필드인지(?))이나 동기화가 없어진다.
+
+<br>
+<br>
+
+성능을 위해서 lazy initialization이 필요한 경우에는 double-check idiom을 사용할 수 있다.
+
+```java
+// Double-check idiom for lazy initialization of instance fields
+private volatile FieldType field;
+
+private FieldType getField() {
+    FieldType result = field;
+    if (result == null) {  // First check (no locking)
+        synchronized(this) {
+            if (field == null)  // Second check (with locking)
+                field = result = computeFieldValue();
+        }
+    }
+    return result;
+}
+```
+
+초기화 이후에 lock되어 접근해야하는 경우를 없애려고 하는 idiom이다.
+
+기본적인 로직은 2번 체크하는 것이다. 
+
+- lock없이 한번 체크
+- 필드가 초기화되어 있지 않다면,
+- lock을 가지고 한번 더 체크하고 초기화하는 방법이다.
+
+초기화 이후에는 locking이 없다는 장점이 있다.
+
+다만, 반드시 필드를 `volatile`로 정의해야만 한다.
+
+예제의 코드가 조금은 난해해 보일 수도 있다.
+
+특히, 지역변수인 `result`가 모호하다. 
+
+이 변수의 역할은 `field`가 초기화 된 이후에 read only라는 것을 확실하게 하기 위함이다.
+
+엄밀히 따지면 반드시 필요한 것은 아니고, 성능을 향상 시킬 수 있다.
+
+저자의 컴퓨터에서는 1.4배 정도 빠르다고한다.
+
+
+<br>
+<br>
+
+double-check idiom을 사용해야만 하는 이유가 없다면, lazy initialization holder class idiom이 항상 더 나은 선택지이다.
+
+<br>
+<br>
+
+중복된 초기화해도 되는 경우도 있을 수 있다.
+
+그 경우에는 double-check idiom에서 2번째 체크를 제외하면 된다.
+
+```java
+// Single-check idiom - can cause repeated initialization!
+private volatile FieldType field;
+
+private FieldType getField() {
+    FieldType result = field;
+    if (result == null)
+        field = result = computeFieldValue();
+    return result;
+}
+```
+
+single-check idiom이라고 하고, 필드는 여전히 `volatile`이다.
+
+모든 쓰레드들이 해당 필드 값을 재계산하는지 신경쓰지 않아도 기본현인 경우 long or double이 아니라면 single-check idiom에서 `volatile` 키워드를 지워도된다.
+
+- 이런 경우를 racy single-check idiom이라고 한다.
+    - 특정 아키텍처에서 필드 접근 속도를 향상시킨다. (최대 쓰레드개수만큼 중복 초기화가 발생할 수 있다.)
+    - 특별한 경우에만 사용할 수 있다.
+
+<br>
+<br>
+
+이 챕터에서 다뤄진 모든 방법은 기본형(primitive)이든 참조형(object reference) 필드이든 적용간으하다.
+
+double-check 이나 single-check idiom이 숫자의 기본형에 적용될 경우에는 0같은 값이 확인을 위한 값이 될 것이다.
+
+<br>
+<br>
+
+결론,
+
+대부분의 필드는 일반적인 초기화면 충분하다. 성능을 위해서나 순환 초기화를 깨뜨리고 싶다면 적절한 lazy initialization을 사용하자.
+
+<br>
+<br>
+
+## Item 84: 쓰레드 스케줄러에 의존해서는 안된다.
+
