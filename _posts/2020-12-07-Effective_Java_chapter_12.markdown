@@ -2,7 +2,7 @@
 layout: post
 title:  "Effective java Chapter 12 Serialization"
 subtitle: "이펙티브 자바 정리"
-date:   2020-11-25 10:47:00
+date:   2020-12-07 15:47:00
 categories: [study]
 ---
 
