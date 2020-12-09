@@ -129,4 +129,77 @@ Serializable을 구현해서 생기는 가장 큰 비용은
 default serialized form을 사용하고, 나중에 클래스의 내부를 바꾸려 한다면?
 - serialized form의 호환 불가능한 변경이 필요하다.
 - `ObjectOutputStream.putFields` `ObjectInputStream.readFields`를 사용해서 유지 보수 할 수 있지만, 어렵고, 이런 코드를 포함해야한다는 문제가 있다.
+- high-quality serialized form을 잘 만들어서 길게 사용할 수 잇게 해야한다.
+
+ 
+<br>
+<br>
+
+Serializable을 상속하면 생길 수 있는 문제점
+- stream unique identifiers (serial version UID)가 필요하다.
+    - 지정하지 않으면 자동으로 SHA-1 해시 function을 통해 런타임에 만들어진다.
+    - 위 값은 클래스 이름, 구현하고 있는 인터페이스, 멤버 변수, 컴파일러에 의해 만들어지는 멤버 변수 등에 영향을 받는다.
+    - 위 중에 하나만 바껴서 default UID는 변경되서 호환성을 지키지 못하게 된다.
+- 버그와 보안 문제가 일어나기 쉽다.
+    - deserialization은 숨은 생성자다. 이 생성자가 불필요한 권한을 획득하지 못하도록 주의를 기울이기 힘들다.
+    - default deserialization에 의존하게 되면 객체에 invariant corruption과 잘못된 접근을 가능하게 한다.
+- 새 버전의 클래스가 나오면 테스트에 드는 비용이 증가한다.
+    - 새버전, 옛날 버전 모두 serialization, deserialization 해봐야 한다.
+- 가볍게 여길 수 있는 결정이 아니다.
+    - Value Class(BigInteger, Instnat 같은)나 Collection 클래스에 주로 사용된다.
+    - 쓰레드 풀처럼 active entity에는 사용되지 않는다.
+- 상속을 위한 클래스나 인터페이스는 Serializable을 상속하지 않는 편이 낫다.
+    - 해당 클래스를 상속해서 사용하는 사람에게 큰 부담으로 작용할 수 있다.
+    - 특정 프레임워크에서 Serializable을 모두 구현한 하위 클래스가 필요한 경우 등에는 사용할 수 있다.
+    - Throwable, Component 클래스 등이 상위 클래스에서 구현되어 있는 경우이다.
+    - 불변이어야 하는 변수가 있으면 `finalize` 메소드를 overriding 못하게 해야한다.
+    - 만약 불변값이 기본값이면 안되는 경우에는 `readObjectNoData` 메소드를 추가해야 한다.
+    
+        ```java
+        // readObjectNoData for stateful extendable serializable classes
+        private void readObjectNoData() throws InvalidObjectException {
+            throw new InvalidObjectException('Stream data required');
+        }
+        ```
+ 
+<br>
+<br>
+
+Serializable을 상속하지 않기로 결정했다면,
+- 상속을 위해 설계되었다면 하위 클래스에 더 많은 노력이 필요하다.
+- 상위 클래스에는 파라미터가 없는 접근가능한 생성자가 필요하다. 그렇지 않으면 serialization proxy pattern을 사용해야 한다.(Item 90)
+
+ 
+<br>
+<br>
+
+내부 클래스는 default serialized form을 사용하면 Serializable을 상속해서는 안된다.
+- 컴파일러가 만드는 필드가 생기기 때문이다.
+
+ 
+<br>
+<br>
+
+결론,
+
+Serializable을 상속하기에는 단점이 많으니, 잘 고려해서 상속해야 한다.
+
+ 
+<br>
+<br>
+
+
+## Item 87: custom serialized form의 사용을 고려하라.
+
+시간이 없는데 클래스를 작성해야 한다면, 최대한 API 설계에 집중하는 것이 적절하다.
+
+만들어 놓고 다음 릴리즈에서 새로 구현해서 배포하면 된다고 생각되지만,
+
+default serialization form을 사용하면 다음 릴리즈때 영원히 종속받게 된다..
+
+ 
+<br>
+<br>
+
+
 
