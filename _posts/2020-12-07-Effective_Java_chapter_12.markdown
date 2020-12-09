@@ -624,7 +624,175 @@ nonfinal serializable 클래스에 적용되는 `readObject` 메소드와 생성
 - Overridable method를 `readObject` 메소드에서 호출하지 마라.
 
 
+<br>
+<br>
+
 ## Item 89: 객체 제어를 위해서 readResolve보다 enum을 선호하라.
+
+Item 3에서는 싱글톤 패턴에 대해 이야기했다.
+
+```java
+public class Elvis {
+    public static final Elvis INSTANCE = new Elvis();
+    private Elvis() {  ... }
+
+    public void leaveTheBuilding() { ... }
+}
+```
+
+위 예제는 Item 3에서 이야기 했듯이, `implements Serializable`가 추가되면 더 이상 싱글톤의 역할을 하지 못한다.
+
+이 경우, default serialized form을 사용하던, 
+
+custom serialized form을 사용하던, 
+
+클래스가 `readObject` 메소드를 직접 제공하던, 
+
+결과는 같다.
+
+
+<br>
+<br>
+
+`readObject` 메소드에서는 새롭게 생성된 객체를 리턴한다. 이는 클래스가 생성될 때의 객체와 다르다.
+
+`readResolve` 메소드는 `readObject` 메소드에서 생성된 객체를 다른 객체로 바꿀 수 있다.
+
+`Elvis` 싱글톤 예제에서
+
+```java
+// readResolve for instance control - you can do better!
+private Object readResolve() {
+    // Return the one true Elvis and let the garbage collector
+    // take care of the Elvis impersonator.
+    return INSTANCE;
+}
+```
+위와 같이 사용하면 싱글톤 프로퍼티를 보장할 수 있다.
+
+이 메소드는 deserialize된 객체를 무시하고, 클래스가 생성될 때 만들어진 `Elvis` 객체를 리턴한다.
+
+`readResolve ` 메소드에 의존하면, 객체 참조 타입의 모든 인스턴스 필드는 `transient`로 정의되어야 한다.
+
+- transient: 멤버 변수가 serialized 되지 않음을 나타낸다. JVM은 본래 값을 무시하고 기본값을 입력한다.
+
+`transient`로 정의되지 않으면 공격자가 `MutablePeriod`의 공격처럼 공격할 수 있다.
+- `readResolve` 메소드 호출 이전에 deserialize 되면서 생기는 공격이다. 레퍼런스를 훔칠 수 있게 해준다.
+
+
+<br>
+<br>
+
+```java
+// Broken singleton - has nontransient object reference field!
+public class Elvis implements Serializable {
+    public static final Elvis INSTANCE = new Elvis();
+    private Elvis() { }
+
+    private String[] favoriteSongs =
+        { 'Hound Dog', 'Heartbreak Hotel' };
+    public void printFavorites() {
+        System.out.println(Arrays.toString(favoriteSongs));
+    }
+
+    private Object readResolve() {
+        return INSTANCE;
+    }
+}
+```
+
+```java
+public class ElvisStealer implements Serializable {
+    static Elvis impersonator;
+    private Elvis payload;
+
+    private Object readResolve() {
+        // Save a reference to the 'unresolved' Elvis instance
+        impersonator = payload;
+
+        // Return object of correct type for favoriteSongs field
+        return new String[] { 'A Fool Such as I' };
+    }
+    private static final long serialVersionUID = 0;
+}
+```
+
+```java
+public class ElvisImpersonator {
+  // Byte stream couldn't have come from a real Elvis instance!
+  private static final byte[] serializedForm = {
+    (byte)0xac, (byte)0xed, 0x00, 0x05, 0x73, 0x72, 0x00, 0x05,
+    0x45, 0x6c, 0x76, 0x69, 0x73, (byte)0x84, (byte)0xe6,
+    (byte)0x93, 0x33, (byte)0xc3, (byte)0xf4, (byte)0x8b,
+    0x32, 0x02, 0x00, 0x01, 0x4c, 0x00, 0x0d, 0x66, 0x61, 0x76,
+    0x6f, 0x72, 0x69, 0x74, 0x65, 0x53, 0x6f, 0x6e, 0x67, 0x73,
+    0x74, 0x00, 0x12, 0x4c, 0x6a, 0x61, 0x76, 0x61, 0x2f, 0x6c,
+    0x61, 0x6e, 0x67, 0x2f, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+    0x3b, 0x78, 0x70, 0x73, 0x72, 0x00, 0x0c, 0x45, 0x6c, 0x76,
+    0x69, 0x73, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x65, 0x72, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x01,
+    0x4c, 0x00, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64,
+    0x74, 0x00, 0x07, 0x4c, 0x45, 0x6c, 0x76, 0x69, 0x73, 0x3b,
+    0x78, 0x70, 0x71, 0x00, 0x7e, 0x00, 0x02
+  };
+
+  public static void main(String[] args) {
+    // Initializes ElvisStealer.impersonator and returns
+    // the real Elvis (which is Elvis.INSTANCE)
+    Elvis elvis = (Elvis) deserialize(serializedForm);
+    Elvis impersonator = ElvisStealer.impersonator;
+
+    elvis.printFavorites();
+    impersonator.printFavorites();
+  }
+}
+```
+
+이렇게 공격이 가능하다.
+
+
+<br>
+<br>
+
+`favoriteSongs` 필드를 transient로 하면 해결할 수 있다.
+
+그렇지만 Elvis를 single-element enum type으로 바꾸는 편이 더 낫다.
+
+- 자바가 정의된 상수외에는 다른 인스턴스를 생성하지 못하게 해준다.
+- 공격자가 `AccessibleObject.setAccessible`와 같은 메소드를 사용한다면, 
+
+```java
+// Enum singleton - the preferred approach
+public enum Elvis {
+    INSTANCE;
+    private String[] favoriteSongs =
+        { 'Hound Dog', 'Heartbreak Hotel' };
+    public void printFavorites() {
+        System.out.println(Arrays.toString(favoriteSongs));
+    }
+}
+```
+
+인스턴스의 갯수를 컴파일 타임에 모른다면 Enum 타입으로 하기 힘들다.
+
+
+<br>
+<br>
+
+`readResolve` 메소드의 접근자(accessibility)는 매우 중요하다.
+
+- `readResolve` 메소드를 final 클래스에 둔다면, private이어야 한다.
+- nonfinal 클래스라면, 접근자를 더 깊게 고려해야한다.
+    - private이면, 어떤 하위 클래스에도 적용할 수 없다.
+    - package-private이면, 같은 패키지에 있는 하위 클래스에만 적용할 수 있다.
+    - protected or public이면, `readResolve` 메소드를 override하지 않은 모든 하위클래스에 적용된다.
+    - protected or public이고 하위 클래스가 ovveride하고 있지 않으면, 하위클래스 객체는 상위 클래스 객체를 생성하면서 `ClassCastException`를 발생 시킬 수 있다.
+    
+결론,
+
+enum type을 불변 객체 제어를 위해서 사용하자.
+
+## Item 90: serialized instances 대신 serialization proxy를 고려하라.
 
 
 결론, 
