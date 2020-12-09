@@ -728,10 +728,31 @@ synchronized (obj) {
     - Unconditionally thread-safe: 클래스의 객체는 mutable. 클래스는 충분한 내부적 동기화를 하고 있다. 외부적 동기화가 필요없다. AtomicLong and ConcurrentHashMap가 예시
     - Conditionally thread-safe: unconditionally thread-safe과 비슷하다. 안전한 병렬처리를 위해서 일부 메소드가 외부적 동기화가 필요하다는 점이 다르다. Collections.synchronized와 같은 wrapper가 예제가 될 수 있다.
     - Not thread-safe: 클래스의 객체가 mutable하다. 병렬적으로 사용하기 위해서 클라이언트는 반드시 메소드를 외부적 동기화 블록을 만들어야한다. ArrayList and HashMap이 예
-    - Thread-hostile: 모든 메소드 호출이 외부 동기화 블록으로 감싸져 있다면, 이 객체는 병렬 사용을 위해서는 부적절하다.
+    - Thread-hostile: 모든 메소드 호출이 외부 동기화 블록으로 감싸져 있다고 해도, 병렬 사용에 부적절한 경우이다.
         - 보통 static 데이터를 동기화 없이 변경할 경우 발생한다.
         - 클래스나 메소드가 thread-hostile함이 발견되면 고쳐지거나 deprecated된다.
         - item 78의 generateSerialNumber가 내부 동기화가 없이 thread-hostile할 수 있다.
+
+```java
+import java.util.concurrent.atomic.AtomicInteger;
+
+class AtomicCounter {
+    private AtomicInteger c = new AtomicInteger(0);
+
+    public void increment() {
+        c.incrementAndGet();
+    }
+
+    public void decrement() {
+        c.decrementAndGet();
+    }
+
+    public int value() {
+        return c.get();
+    }
+
+}
+```
 
 Java Concurrency in Practice의 the thread safety annotations(Immutable, ThreadSafe, and NotThreadSafe)과 일부 일치한다.
 
