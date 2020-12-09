@@ -106,3 +106,27 @@ Serialization을 피할 수 있으면 피하고, 피할 수 없다면 화이트 
 
 ## Item 86: 아주 주의를 기울여서 Serializable을 구현하라
 
+`implement Serializable`을 추가하는 정도로 특정 클래스의 객체를 Serialize하기 쉽다고 생각하는 사람들 이밚다.
+
+하지만, 당장은 별로 큰 비용이 들지 않더라도, 장기적으로 꽤 많은 비용이 발생할 수 있다.
+
+ 
+<br>
+<br>
+
+Serializable을 구현해서 생기는 가장 큰 비용은
+- 배포 이후에 클래스 구현을 변경하기가 어려워진다는 점이다.
+    - 한번 Serializable을 구현하게 되면, byte-stream(또는 Serialized form)이 외부에 공개된 API로서 역할을 하게 되버린다.
+    - 한번 배포하고 나면 영원히 지원해줘야한다.
+    - default serialized form을 사용하면 
+        - private이나 package-private instance 필드까지 공개된 API가 되어버린다.
+        - 정보은닉(information hiding)을 위한 효율성이 매우 떨어지게 된다.
+
+ 
+<br>
+<br>
+
+default serialized form을 사용하고, 나중에 클래스의 내부를 바꾸려 한다면?
+- serialized form의 호환 불가능한 변경이 필요하다.
+- `ObjectOutputStream.putFields` `ObjectInputStream.readFields`를 사용해서 유지 보수 할 수 있지만, 어렵고, 이런 코드를 포함해야한다는 문제가 있다.
+
