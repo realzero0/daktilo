@@ -166,7 +166,7 @@ Serializable을 상속하면 생길 수 있는 문제점
 <br>
 
 Serializable을 상속하지 않기로 결정했다면,
-- 상속을 위해 설계되었다면 하위 클래스에 더 많은 노력이 필요하다.
+- 상속을 위해 설계된 클래스가 serializable하지 않으면, 하위 클래스를 serializable하게 만들며면 많은 노력이 필요하다.
 - 상위 클래스에는 파라미터가 없는 접근가능한 생성자가 필요하다. 그렇지 않으면 serialization proxy pattern을 사용해야 한다.(Item 90)
 
  
@@ -803,7 +803,7 @@ enum type을 불변 객체 제어를 위해서 사용하자.
 
 보이지 않는 생성자가 생기면서 발생하는 문제가 대부분이다.
 
-serialization proxy pattern을 사용하면 가능하다.
+serialization proxy pattern을 사용하면 그런 문제의 일부 해결이 가능하다.
 
 <br>
 <br>
