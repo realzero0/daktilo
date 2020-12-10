@@ -794,11 +794,143 @@ public enum Elvis {
 
 enum type을 불변 객체 제어를 위해서 사용하자.
 
+<br>
+<br>
+
 ## Item 90: serialized instances 대신 serialization proxy를 고려하라.
 
+`Serializable`를 구현하는 것은 버그와 보안 문제가 생길 가능성을 높인다는 점을 이 챕터 내내 이야기 했다.
 
-결론, 
+보이지 않는 생성자가 생기면서 발생하는 문제가 대부분이다.
 
-`readObject` 메소드 작성할 때마다 public 생성자를 작성하는 것과 같이 주의를 기울여야 한다.
+serialization proxy pattern을 사용하면 가능하다.
 
-- private 참조 필드를 가지는 클래스는, 
+<br>
+<br>
+
+serialization proxy pattern 만드는 법
+- 감싸고 있는 클래스의 logical state을 저장하는 객체를 private static nested class에 설계
+- 이 nested 클래스가 serialization proxy로 역할한다.
+    - 파라미터가 감싸고 있는 클래스인 생성자가 필요하다.
+    - 일관성 체크나 방어적 복사는 따로 하지 않아도 된다.
+    - proxy의 default serialization from은 완벽히 감싸고 있는 클래스에 적용할 수 있다.
+- Serialize proxy하고 감싸고 있는 클래스는 각각 `Serializable`을 구현해야한다.
+
+
+<br>
+<br>
+
+```java
+// Serialization proxy for Period class
+private static class SerializationProxy implements Serializable {
+    private final Date start;
+    private final Date end;
+
+    SerializationProxy(Period p) {
+        this.start = p.start;
+        this.end = p.end;
+    }
+
+    private static final long serialVersionUID =
+        234098243823485285L; // Any number will do (Item  87)
+}
+```
+
+앞선 예제의 `Period` 클래스에 대해서 proxy를 적용하면 위와 같다.
+
+```java
+// writeReplace method for the serialization proxy pattern
+private Object writeReplace() {
+    return new SerializationProxy(this);
+}
+```
+
+`writeReplace` 메소드를 위와 같이 추가하면 된다.
+
+감싸고 있는 클래스말고 private 클래스를 리턴하게 된다. `writeReplace` 메소드는 감싸고 있는 객체를 private nested 클래스로 변환시켜준다.
+
+```java
+// readObject method for the serialization proxy pattern
+private void readObject(ObjectInputStream stream)
+        throws InvalidObjectException {
+    throw new InvalidObjectException("Proxy required");
+}
+```
+
+readObject 메소드는 불필요하기 때문에 공격을 방지하기 위해서 위와 같이 Exception을 던지도록 하면 된다.
+
+마지막으로 `SerializationProxy` 클래스에 `readResolve` 메소드를 제공해서 감싸고 있는 클래스와 논리적으로 동등한 클래스를 리턴하도록 하면 된다.
+- 이 메소드가 있어서 proxy객체를 다시 감싸고 있는 클래스(enclosing class)로 바꿀 수 있다.
+- 생성자나 static factory method를 그대로 사용할 수 있어서, 클래스의 불변을 깨지 않는다.
+
+```java
+// readResolve method for Period.SerializationProxy
+private Object readResolve() {
+    return new Period(start, end);    // Uses public constructor
+}
+```
+
+
+<br>
+<br>
+
+다른 방법보다 나은 점
+- 필드가 final로 정의될 수 있어서, 레퍼런스 탈취등에 대한 공격을 막기 쉽다.
+- 본래 serialized 객체말고 다른 클래스를 가질 수 있다.
+    - `EnumSet`은 생성자 없이 static factory만 있다. 
+        - 클라이언트에서는 `EnumSet`을 리턴하지만, OpenJDK 구현체는 갯수에 따라서 64개를 기준으로 작으면 `RegularEnumSet` 많으면 `JumboEnumSet`을 리턴한다.
+        - 60개의 원소를 가진 `EnumSet`을 serialize한다고 하면, 5개 원소가 추가되고 안되냐에 따라서 구현체가 달라지게 된다.
+        
+            ```java
+            // EnumSet's serialization proxy
+            private static class SerializationProxy <E extends Enum<E>>
+                    implements Serializable {
+                // The element type of this enum set.
+                private final Class<E> elementType;
+            
+                // The elements contained in this enum set.
+                private final Enum<?>[] elements;
+            
+                SerializationProxy(EnumSet<E> set) {
+                    elementType = set.elementType;
+                    elements = set.toArray(new Enum<?>[0]);
+                }
+            
+                private Object readResolve() {
+                    EnumSet<E> result = EnumSet.noneOf(elementType);
+                    for (Enum<?> e : elements)
+                        result.add((E)e);
+                    return result;
+                }
+            
+                private static final long serialVersionUID =
+                    362491234563181265L;
+            }
+            ```
+          
+        - 위와 같이 Proxy를 사용하면 간단하게 만들 수 있다.
+    
+    
+
+<br>
+<br>
+
+proxy 패턴의 2가지 한계점
+- 유저가 상속해서 사용할 수 있는 클래스에는 호환가능하지 않다.
+- Circular 객체 의존 관계인 경우에는 안된다.
+    - `ClassCastException`이 발생한다. 왜냐하면 아직 필요한 객체가 만들어지지 않았기 때문이다.
+
+
+<br>
+<br>
+
+방어적 복사로 serialize하는 것에 비해서 성능 상 더 뛰어나지는 못하다. 저자의 컴퓨터에서 14퍼센트 정도 더 느렸다.
+
+
+<br>
+<br>
+
+
+결론,
+
+적절한 조건에서 serialization proxy pattern을 사용하면 매우 유용하게 사용될 수 있다.
