@@ -210,7 +210,8 @@ default serialized form이 적절하다는 확신이 없으면 사용하면 안�
 
 default serialized form
 - 상대적으로 요율적이다.
-- physical representation이 logical content하고 같으면 사용할 수 잇다.
+- physical representation이 logical content하고 같으면 사용할 수 있다.
+
 ```java
 // Good candidate for default serialized form
 public class Name implements Serializable {
@@ -234,6 +235,7 @@ public class Name implements Serializable {
     ... // Remainder omitted
 }
 ```
+
 - 사람의 이름을 대표 하는 위와 같은 예제에서는 적절하다.
 
 
