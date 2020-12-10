@@ -475,7 +475,7 @@ public class BogusPeriod {
 
 실행하게 되면 결과는
 
-```shell script
+```
 Fri Jan 01 12:00:00 PST 1999 - Sun Jan 01 12:00:00 PST 1984.
 ```
 
@@ -562,7 +562,7 @@ public static void main(String[] args) {
 }
 ```
 
-```shell script
+```
 Wed Nov 22 00:21:29 PST 2017 - Wed Nov 22 00:21:29 PST 1978
 Wed Nov 22 00:21:29 PST 2017 - Sat Nov 22 00:21:29 PST 1969
 ```
